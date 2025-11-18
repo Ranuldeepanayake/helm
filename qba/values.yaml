@@ -1,0 +1,104 @@
+replicaCount: 1
+
+containers:
+  - name: back-end
+    image: public.ecr.aws/l4a5c1v5/qba/qba-back-end:0.1.0-SNAPSHOT-202510051419
+    imagePullPolicy: IfNotPresent
+    ports:
+      containerPort: 80
+    configMapRef: back-end-config
+
+  - name: rabbitmq
+    image: rabbitmq:management
+    imagePullPolicy: IfNotPresent
+    ports:
+      containerPort: 15672
+    configMapRef: rabbitmq-config
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets:
+  - aws-ecr
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+podLabels: {}
+
+#Service.
+service:
+  name: qba
+  type: ClusterIP
+  ports:
+    - name: qba-front-end
+      port: 80
+      targetPort: 80
+    - name: qba-back-end
+      port: 8080
+      targetPort: 8080
+  name: qba-rabbitmq
+  type: ClusterIP
+  ports:
+    - name: qba-rabbitmq
+      port: 15672
+      targetPort: 15672
+
+#Ingress.
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  hosts:
+    - host: qba.mydomain.com
+      paths:
+        - path: /(/|$)(.*)
+          pathType: ImplementationSpecific
+          service:
+            name: qba
+            port: 80
+        - path: /backend(/|$)(.*)
+          pathType: ImplementationSpecific
+          service:
+            name: qba
+            port: 8080
+        - path: /rabbitmq(/|$)(.*)
+          pathType: ImplementationSpecific
+          service:
+            name: qba-rabbitmq
+            port: 15672
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
