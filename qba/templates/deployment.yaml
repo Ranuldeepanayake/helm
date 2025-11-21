@@ -38,7 +38,9 @@ spec:
         
         ports:
         {{- range .ports }}
-          - containerPort: {{ . }}
+          - name: {{ .name }}
+            containerPort: {{ .containerPort }}
+            protocol: {{ .protocol }}
         {{- end }}
 
         {{- if .env }}
@@ -55,29 +57,41 @@ spec:
               name: {{ .configMapRef }}
         {{- end }}
 
-        {{- with .Values.livenessProbe }}
+        {{- if .livenessProbe }}
+        {{- with .livenessProbe }}
         livenessProbe:
           {{- toYaml . | nindent 12 }}
         {{- end }}
+        {{- end }}
 
-        {{- with .Values.readinessProbe }}
+        {{- if .readinessProbe }}
+        {{- with .readinessProbe }}
         readinessProbe:
           {{- toYaml . | nindent 12 }}
         {{- end }}
+        {{- end }}
 
-        {{- with .Values.resources }}
+        {{- if .resources }}
+        {{- with .resources }}
         resources:
           {{- toYaml . | nindent 12 }}
         {{- end }}
+        {{- end }}
 
-        {{- with .Values.volumeMounts }}
+        {{- if .volumeMounts }}
+        {{- with .volumeMounts }}
         volumeMounts:
           {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
+
+        {{- if .volumes }}
+        {{- with .volumes }}
+        volumes:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
         {{- end }}
 
       {{- end }}
 
-      {{- with .Values.volumes }}
-      volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      
