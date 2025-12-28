@@ -1,16 +1,14 @@
 replicaCount: 1
-
 containers:
   - name: back-end
     repository: public.ecr.aws/l4a5c1v5/qba/qba-back-end
-    tag: 0.1.0-SNAPSHOT-202511221202
+    tag: 0.1.0-SNAPSHOT-20251228_212042-COMMITSHA_52652309
     imagePullPolicy: IfNotPresent
     ports:
       - name: http-api
         containerPort: 80
         protocol: TCP
     configMapRef: back-end-config
-
   - name: rabbitmq
     repository: rabbitmq
     tag: management
@@ -23,11 +21,9 @@ containers:
         containerPort: 5672
         protocol: TCP
     configMapRef: rabbitmq-config
-
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets:
   - name: aws-ecr
-
 #Service.
 service:
   - name: qba
@@ -48,14 +44,13 @@ service:
       - name: qba-rabbitmq-amqp
         port: 5672
         targetPort: 5672
-
 #Ingress.
 ingress:
   enabled: true
   className: nginx
   annotations:
-    #nginx.ingress.kubernetes.io/rewrite-target: /$1
-    #nginx.ingress.kubernetes.io/use-regex: "true"
+  #nginx.ingress.kubernetes.io/rewrite-target: /$1
+  #nginx.ingress.kubernetes.io/use-regex: "true"
   hosts:
     - host: qba.mydomain.com
       paths:
@@ -63,34 +58,31 @@ ingress:
           pathType: ImplementationSpecific
           service:
             name: qba
-            port: 
+            port:
               number: 80
         - path: /backend(/|$)(.*)
           pathType: ImplementationSpecific
           service:
             name: qba
-            port: 
-             number: 8080
+            port:
+              number: 8080
     - host: qbarmq.mydomain.com
       paths:
         - path: /
           pathType: ImplementationSpecific
           service:
             name: qba-rabbitmq
-            port: 
-             number: 15672
+            port:
+              number: 15672
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
 # This is to override the chart name.
 nameOverride: ""
 fullnameOverride: ""
-
 podAnnotations: {}
 podLabels: {}
-
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
   httpGet:
@@ -100,7 +92,6 @@ readinessProbe:
   httpGet:
     path: /
     port: http
-
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
   enabled: false
@@ -108,7 +99,6 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
