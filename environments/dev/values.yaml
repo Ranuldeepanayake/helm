@@ -2,7 +2,8 @@ replicaCount: 1
 
 containers:
   - name: back-end
-    image: public.ecr.aws/l4a5c1v5/qba/qba-back-end:0.1.0-SNAPSHOT-202511191335
+    repository: public.ecr.aws/l4a5c1v5/qba/qba-back-end
+    tag: 0.1.0-SNAPSHOT-202511221202
     imagePullPolicy: IfNotPresent
     ports:
       - name: http-api
@@ -11,7 +12,8 @@ containers:
     configMapRef: back-end-config
 
   - name: rabbitmq
-    image: rabbitmq:management
+    repository: rabbitmq
+    tag: management
     imagePullPolicy: IfNotPresent
     ports:
       - name: http-management

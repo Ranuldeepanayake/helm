@@ -1,0 +1,11 @@
+kind: Application
+metadata:
+  name: qba-dev
+spec:
+  source:
+    path: charts/qba
+    helm:
+      valueFiles:
+        - ../../environments/dev/values.yaml
+  destination:
+    namespace: dev
