@@ -9,6 +9,7 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  
   selector:
     matchLabels:
       {{- include "qba.selectorLabels" . | nindent 6 }}

@@ -7,12 +7,12 @@ metadata:
   name: {{ .name }}
   labels:
     app.kubernetes.io/name: {{ .name }}
-    app.kubernetes.io/instance: {{ $root.Release.Name }}
+    #app.kubernetes.io/instance: {{ $root.Release.Name }}
 spec:
   type: {{ .type | default "ClusterIP" }}
   selector:
-    app.kubernetes.io/name: {{ $root.Release.Name }}
-    #app.kubernetes.io/name: {{ .name }}
+    #app.kubernetes.io/name: {{ $root.Release.Name }}
+    app.kubernetes.io/name: {{ .name }}
   ports:
     {{- range .ports }}
     - name: {{ .name }}
