@@ -14,9 +14,9 @@ spec:
   selector:
     matchLabels:
       {{- include "qba.selectorLabels" . | nindent 6 }}
-      {{- with .Values.podLabels }}
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
+      # {{- with .Values.podLabels }}
+      # {{- toYaml . | nindent 8 }}
+      # {{- end }}
 
   template:
     metadata:
@@ -28,9 +28,9 @@ spec:
       #These are labels attached specifically to pods. 
       labels:
         {{- include "qba.selectorLabels" . | nindent 6 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        # {{- with .Values.podLabels }}
+        # {{- toYaml . | nindent 8 }}
+        # {{- end }}
         
     spec:
       {{- with .Values.imagePullSecrets }}

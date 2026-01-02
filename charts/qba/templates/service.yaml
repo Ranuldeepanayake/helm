@@ -11,8 +11,9 @@ metadata:
 spec:
   type: {{ .type | default "ClusterIP" }}
   selector:
-    app.kubernetes.io/name: {{ $root.Release.Name }}
-    app.kubernetes.io/name: {{ .name }}
+    {{- include "qba.selectorLabels" . | nindent 6 }}
+    # app.kubernetes.io/name: {{ $root.Release.Name }}
+    # app.kubernetes.io/name: {{ .name }}
   ports:
     {{- range .ports }}
     - name: {{ .name }}
