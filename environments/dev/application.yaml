@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: qba-dev
-  #namespace: qba-dev
+  namespace: argocd
 spec:
   project: default
   source:
