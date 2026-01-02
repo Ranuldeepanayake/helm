@@ -2,20 +2,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: back-end-config
+  name: qba-back-end-config
 data:
-  RABBITMQ_HOST: qba-rabbitmq
-  RABBITMQ_PORT: "5672"
-  RABBITMQ_USERNAME: ranul
-  RABBITMQ_PASSWORD: ranul@123
-  QUEUE_NAME: QBA_QUEUE_1
-  RANDOM_LENGTH: "10"
-  PUBLISH_INTERVAL: "2000"
+{{- range $key, $value := .Values.env.qbaBackEnd }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: rabbitmq-config
+  name: qba-rabbitmq-config
 data:
   RABBITMQ_DEFAULT_USER: ranul
   RABBITMQ_DEFAULT_PASS: "ranul@123"

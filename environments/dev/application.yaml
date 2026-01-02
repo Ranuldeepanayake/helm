@@ -1,7 +1,8 @@
+#ArgoCD application for the dev environment.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: qba-staging
+  name: qba-dev
   namespace: argocd
 spec:
   project: default
@@ -12,9 +13,13 @@ spec:
     helm:
       valueFiles:
         - ../../environments/dev/values.yaml
+        - ../../environments/dev/qba-back-end-values-env.yaml
+        #- ../../environments/dev/qba-back-end-values-secrets.yaml
+        - ../../environments/dev/qba-rabbitmq-values-env.yaml
+        #- ../../environments/dev/qba-rabbitmq-values-secrets.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: qba-staging
+    namespace: qba-dev
   syncPolicy:
   #   automated:
   #     prune: true

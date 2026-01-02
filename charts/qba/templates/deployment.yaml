@@ -33,7 +33,7 @@ spec:
       containers:
       {{- range .Values.containers }}
       - name: {{ .name }}
-        image: {{ .image }}
+        image: "{{ .repository }}:{{ .tag }}"
         imagePullPolicy: {{ .imagePullPolicy }}
         
         ports:
@@ -57,6 +57,13 @@ spec:
               name: {{ .configMapRef }}
         {{- end }}
 
+        {{- if .resources }}
+        {{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
+
         {{- if .livenessProbe }}
         {{- with .livenessProbe }}
         livenessProbe:
@@ -67,13 +74,6 @@ spec:
         {{- if .readinessProbe }}
         {{- with .readinessProbe }}
         readinessProbe:
-          {{- toYaml . | nindent 12 }}
-        {{- end }}
-        {{- end }}
-
-        {{- if .resources }}
-        {{- with .resources }}
-        resources:
           {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}

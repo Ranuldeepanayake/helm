@@ -1,10 +1,10 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
+# apiVersion: kustomize.config.k8s.io/v1beta1
+# kind: Kustomization
 
-resources:
-  - ./rendered.yaml
+# resources:
+#   - ./rendered.yaml
 
-configMapGenerator:
-  - name: qba-back-end-config
-    envs:
-      - ./files/qba-back-end.env
+# configMapGenerator:
+#   - name: qba-back-end-config
+#     envs:
+#       - ./files/qba-back-end.env
