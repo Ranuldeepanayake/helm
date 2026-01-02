@@ -9,10 +9,14 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
-  
+
+  #These are labels to select which pods must come under a deployment. 
   selector:
     matchLabels:
       {{- include "qba.selectorLabels" . | nindent 6 }}
+      {{- with .Values.selectorLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 
   template:
     metadata:
@@ -20,11 +24,15 @@ spec:
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
+      #These are labels attached specifically to pods. 
       labels:
-        {{- include "qba.labels" . | nindent 8 }}
+        #{{- include "qba.labels" . | nindent 8 }}
+        {{- include "qba.selectorLabels" . | nindent 6 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+        
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

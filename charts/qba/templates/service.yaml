@@ -7,12 +7,17 @@ metadata:
   name: {{ .name }}
   labels:
     app.kubernetes.io/name: {{ .name }}
+    {{- include "qba.selectorLabels" . | nindent 6 }}
     #app.kubernetes.io/instance: {{ $root.Release.Name }}
 spec:
   type: {{ .type | default "ClusterIP" }}
   selector:
     #app.kubernetes.io/name: {{ $root.Release.Name }}
-    app.kubernetes.io/name: {{ .name }}
+    #app.kubernetes.io/name: {{ .name }}
+    {{- include "qba.selectorLabels" . | nindent 6 }}
+    {{- with .Values.podLabels }}
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
   ports:
     {{- range .ports }}
     - name: {{ .name }}

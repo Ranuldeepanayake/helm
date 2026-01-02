@@ -1,4 +1,8 @@
+selectorLabels:
+  environment: dev
+
 replicaCount: 1
+
 containers:
   - name: back-end
     repository: public.ecr.aws/l4a5c1v5/qba/qba-back-end
@@ -102,11 +106,16 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
 # This is to override the chart name.
 nameOverride: ""
+
 fullnameOverride: ""
+
 podAnnotations: {}
-podLabels: {}
+
+podLabels:
+  environment: dev
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
