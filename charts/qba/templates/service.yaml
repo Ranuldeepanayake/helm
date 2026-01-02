@@ -14,7 +14,7 @@ spec:
   selector:
     #app.kubernetes.io/name: {{ $root.Release.Name }}
     #app.kubernetes.io/name: {{ .name }}
-    {{- include "qba.selectorLabels" . | nindent 6 }}
+    #{{- include "qba.selectorLabels" . | nindent 6 }}
     {{- with .Values.podLabels }}
       {{- toYaml . | nindent 8 }}
     {{- end }}
