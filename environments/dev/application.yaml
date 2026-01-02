@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: qba-dev
+  name: qba-staging
   namespace: argocd
 spec:
   project: default
@@ -11,11 +11,18 @@ spec:
     path: charts/qba
     helm:
       valueFiles:
-        - values-dev.yaml
+        - ../../environments/dev/values.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: qba-dev
-  # syncPolicy:
+    namespace: qba-staging
+  syncPolicy:
   #   automated:
   #     prune: true
   #     selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+        - ApplyOutOfSyncOnly=false
+        - Validate=false
+        - Replace=false
+        - Force=false
+        - ServerSideApply=false
