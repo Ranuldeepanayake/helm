@@ -22,7 +22,7 @@ spec:
   # optional Helm values
   selector:
     matchLabels:
-      {{- include "qba.selectorLabels" . | nindent 6 }}
+      {{- include "qba.selectorLabels" . | nindent 4 }}
       # app.kubernetes.io/name: {{ include "qba.name" . }}
       # app.kubernetes.io/instance: {{ .Release.Name }}
 
@@ -30,7 +30,7 @@ spec:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 6 }}
       {{- end }}
 
       #These are labels attached specifically to pods. 
