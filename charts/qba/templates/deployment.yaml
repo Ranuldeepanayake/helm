@@ -13,7 +13,10 @@ spec:
   #These are labels to select which pods must come under a deployment. 
   selector:
     matchLabels:
-      {{- include "qba.selectorLabels" . | nindent 2 }}
+      {{- include "qba.selectorLabels" . | nindent 6 }}
+      {{- with .Values.podLabels }}
+          {{- toYaml . | nindent 6 }}
+      {{- end }}
 
   template:
     metadata:
@@ -24,10 +27,9 @@ spec:
 
       #These are labels attached specifically to pods. 
       labels:
-        {{- include "qba.selectorLabels" . | nindent 2 }}
-        # {{- include "qba.labels" . | nindent 8 }}
+        {{- include "qba.selectorLabels" . | nindent 4 }}
         {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
+          {{- toYaml . | nindent 4 }}
         {{- end }}
         
     spec:
