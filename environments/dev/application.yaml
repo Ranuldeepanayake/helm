@@ -13,10 +13,10 @@ spec:
     helm:
       valueFiles:
         - ../../environments/dev/values.yaml
-        - ../../environments/dev/qba-back-end-values-env.yaml
-        #- ../../environments/dev/qba-back-end-values-secrets.yaml
-        - ../../environments/dev/qba-rabbitmq-values-env.yaml
-        #- ../../environments/dev/qba-rabbitmq-values-secrets.yaml
+        - ../../environments/dev/qba-back-end-env.yaml
+        #- ../../environments/dev/qba-back-end-secrets.yaml
+        - ../../environments/dev/qba-rabbitmq-env.yaml
+        #- ../../environments/dev/qba-rabbitmq-secrets.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: qba-dev
