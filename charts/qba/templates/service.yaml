@@ -8,9 +8,9 @@ metadata:
   labels:  
     app.kubernetes.io/service-name: {{ .name }}
     {{- include "qba.selectorLabels" $root | nindent 4 }}
-    # {{- with $root.Values.commonLabels }}
-    #   {{- toYaml . | nindent 6 }}
-    # {{- end }}
+    {{- with $root.Values.commonLabels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
 
 spec:
   type: {{ .type | default "ClusterIP" }}
