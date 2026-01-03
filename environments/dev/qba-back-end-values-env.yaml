@@ -1,6 +1,6 @@
 env:
   qbaBackEnd:
-    RABBITMQ_HOST: qba-rabbitmq-dev
+    RABBITMQ_HOST: qba-rabbitmq
     RABBITMQ_PORT: 5672
     RABBITMQ_USERNAME: ranul
     RABBITMQ_PASSWORD: ranul@123
