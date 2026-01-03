@@ -5,21 +5,20 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .name }}
-  labels:
-    app.kubernetes.io/name: {{ .name }}
-    app.kubernetes.io/instance: {{ $root.Release.Name }}
+  labels:  
+    app.kubernetes.io/service-name: {{ .name }}
+    {{- include "qba.selectorLabels" $root | nindent 4 }}
+    # {{- with $root.Values.commonLabels }}
+    #   {{- toYaml . | nindent 6 }}
+    # {{- end }}
 
 spec:
   type: {{ .type | default "ClusterIP" }}
 
+  #Mandatory.
   selector:
-    #app.kubernetes.io/name: {{ $root.Release.Name }}
-    #app.kubernetes.io/name: {{ .name }}
-    {{- include "qba.selectorLabels" $root | nindent 6 }}
-    # {{- with $root.Values.podLabels }}
-    #   {{- toYaml . | nindent 6 }}
-    # {{- end }}
-
+    {{- include "qba.selectorLabels" $root | nindent 4 }}
+    
   ports:
     {{- range .ports }}
     - name: {{ .name }}
