@@ -11,12 +11,20 @@ spec:
   {{- end }}
 
   #These are labels to select which pods must come under a deployment. 
+  #Selector labels must never be configurable. It is best to use the varibales
+  #provided by the chart. Selector labels are a subset of pod labels.
+  #The below items should not be used as selector labels,
+  # environment
+  # version
+  # git SHA
+  # tier
+  # dynamic labels
+  # optional Helm values
   selector:
     matchLabels:
       {{- include "qba.selectorLabels" . | nindent 6 }}
-      {{- with .Values.podLabels }}
-          {{- toYaml . | nindent 6 }}
-      {{- end }}
+      # app.kubernetes.io/name: {{ include "qba.name" . }}
+      # app.kubernetes.io/instance: {{ .Release.Name }}
 
   template:
     metadata:
@@ -26,6 +34,7 @@ spec:
       {{- end }}
 
       #These are labels attached specifically to pods. 
+      #There can be user configurable pods for extra information.
       labels:
         {{- include "qba.selectorLabels" . | nindent 4 }}
         {{- with .Values.podLabels }}

@@ -16,9 +16,9 @@ spec:
     #app.kubernetes.io/name: {{ $root.Release.Name }}
     #app.kubernetes.io/name: {{ .name }}
     {{- include "qba.selectorLabels" $root | nindent 6 }}
-    {{- with $root.Values.podLabels }}
-      {{- toYaml . | nindent 6 }}
-    {{- end }}
+    # {{- with $root.Values.podLabels }}
+    #   {{- toYaml . | nindent 6 }}
+    # {{- end }}
 
   ports:
     {{- range .ports }}
