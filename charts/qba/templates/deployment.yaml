@@ -37,9 +37,9 @@ spec:
       #There can be user configurable pods for extra information.
       labels:
         {{- include "qba.selectorLabels" . | nindent 4 }}
-        {{- with .Values.podLabels }}
-          {{- toYaml . | nindent 4 }}
-        {{- end }}
+        # {{- with .Values.podLabels }}
+        #   {{- toYaml . | nindent 4 }}
+        # {{- end }}
         
     spec:
       {{- with .Values.imagePullSecrets }}
