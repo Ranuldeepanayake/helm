@@ -1,6 +1,3 @@
-selectorLabels:
-  environment: dev
-
 replicaCount: 1
 
 containers:
