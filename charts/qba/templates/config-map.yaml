@@ -13,5 +13,6 @@ kind: ConfigMap
 metadata:
   name: qba-rabbitmq-config
 data:
-  RABBITMQ_DEFAULT_USER: ranul
-  RABBITMQ_DEFAULT_PASS: "ranul@123"
+{{- range $key, $value := .Values.env.qbaRabbitmq }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}

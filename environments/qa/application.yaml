@@ -1,0 +1,33 @@
+#ArgoCD application for the dev environment.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: qba-qa #This becomes the release name.
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:Ranuldeepanayake/qba-helm.git
+    targetRevision: develop
+    path: charts/qba
+    helm:
+      valueFiles:
+        - ../../environments/qa/values.yaml
+        - ../../environments/qa/qba-back-end-env.yaml
+        #- ../../environments/qa/qba-back-end-secrets.yaml
+        - ../../environments/qa/qba-rabbitmq-env.yaml
+        #- ../../environments/qa/qba-rabbitmq-secrets.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: qba-qa
+  syncPolicy:
+  #   automated:
+  #     prune: true
+  #     selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+        - ApplyOutOfSyncOnly=false
+        - Validate=false
+        - Replace=false
+        - Force=false
+        - ServerSideApply=false
