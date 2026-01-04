@@ -1,12 +1,10 @@
 commonLabels:
   environment: qa
-
 replicaCount: 1
-
 containers:
   - name: back-end
     repository: public.ecr.aws/l4a5c1v5/qba/qba-back-end
-    tag: 0.1.0-SNAPSHOT-20260101_175012-COMMITSHA_d1a48b3b
+    tag: 0.1.0-rc.0-RELEASE-SNAPSHOT-20260104_201427-COMMITSHA_b299da7f
     imagePullPolicy: IfNotPresent
     ports:
       - name: http-api
@@ -43,14 +41,11 @@ containers:
       limits:
         cpu: "2"
         memory: "4Gi"
-
 #Empty env field to append when merging value files by ArgoCD.
 env: {}
-
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets:
   - name: aws-ecr
-
 #Service.
 service:
   - name: qba-qa
@@ -71,7 +66,6 @@ service:
       - name: qba-rabbitmq-amqp
         port: 5672
         targetPort: 5672
-
 #Ingress.
 ingress:
   enabled: true
@@ -106,14 +100,10 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
 # This is to override the chart name.
 nameOverride: ""
-
 fullnameOverride: ""
-
 podAnnotations: {}
-
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe:
   httpGet:
@@ -123,7 +113,6 @@ readinessProbe:
   httpGet:
     path: /
     port: http
-
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
   enabled: false
@@ -131,7 +120,6 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
@@ -140,7 +128,6 @@ volumes: []
 #     optional: false
 
 # Additional volumeMounts on the output Deployment definition.
-
 volumeMounts: []
 # - name: foo
 #   mountPath: "/etc/foo"
