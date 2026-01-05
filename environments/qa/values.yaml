@@ -4,7 +4,7 @@ replicaCount: 1
 containers:
   - name: back-end
     repository: public.ecr.aws/l4a5c1v5/qba/qba-back-end
-    tag: 0.2.0-rc.7-RELEASE-SNAPSHOT-20260105_000044-COMMITSHA_25ff3a91
+    tag: 0.1.0-rc.16-RELEASE-SNAPSHOT-20260105_214648-COMMITSHA_48befa06
     imagePullPolicy: IfNotPresent
     ports:
       - name: http-api
