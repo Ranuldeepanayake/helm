@@ -12,11 +12,11 @@ spec:
     path: charts/qba
     helm:
       valueFiles:
-        - ../../environments/qa/values.yaml
-        - ../../environments/qa/qba-back-end-env.yaml
-        #- ../../environments/qa/qba-back-end-secrets.yaml
-        - ../../environments/qa/qba-rabbitmq-env.yaml
-        #- ../../environments/qa/qba-rabbitmq-secrets.yaml
+        - ../../environments/qba/qa/values.yaml
+        - ../../environments/qba/qa/qba-back-end-env.yaml
+        #- ../../environments/qba/qa/qba-back-end-secrets.yaml
+        - ../../environments/qba/qa/qba-rabbitmq-env.yaml
+        #- ../../environments/qba/qa/qba-rabbitmq-secrets.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: qba-qa
