@@ -5,7 +5,7 @@ metadata:
   name: qba-dev #This becomes the release name.
   namespace: argocd
 spec:
-  project: default
+  project: home-lab
   source:
     repoURL: git@github.com:Ranuldeepanayake/helm.git
     targetRevision: develop
