@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "crud.fullname" . }}
+  labels:
+    {{- include "crud.labels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+
+  #These are labels to select which pods must come under a deployment. 
+  #Selector labels must never be configurable. It is best to use the variables
+  #provided by the chart. Selector labels are a subset of pod labels.
+  #The below items should not be used as selector labels,
+  # environment
+  # version
+  # git SHA
+  # tier
+  # dynamic labels
+  # optional Helm values
+  selector:
+    matchLabels:
+      {{- include "crud.selectorLabels" . | nindent 6 }}
+
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      #These are labels attached specifically to pods. 
+      #There can be user configurable pods for extra information.
+      labels:
+        {{- include "crud.selectorLabels" . | nindent 8 }}
+        {{- with .Values.commonLabels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      containers:
+      {{- range .Values.containers }}
+      - name: {{ .name }}
+        image: "{{ .repository }}:{{ .tag }}"
+        imagePullPolicy: {{ .imagePullPolicy }}
+        
+        ports:
+        {{- range .ports }}
+          - name: {{ .name }}
+            containerPort: {{ .containerPort }}
+            protocol: {{ .protocol }}
+        {{- end }}
+
+        {{- if .env }}
+        env:
+        {{- range .env }}
+          - name: {{ .name }}
+            value: {{ .value | quote }}
+        {{- end }}
+        {{- end }}
+
+        #This is for referencing the config map for environment variables. 
+        #It is optional and will not cause any issues if the config map is not present.
+        #A conditional include is not set since there will be one config map per container.
+        #The config map will be generated with the name <container-name>-<release-name>.
+        envFrom:
+          - configMapRef:
+              name: {{ .name }}-{{ include "crud.fullname" $ }}
+              optional: true
+
+        {{- if .resources }}
+        {{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
+
+        {{- if .livenessProbe }}
+        {{- with .livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
+
+        {{- if .readinessProbe }}
+        {{- with .readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
+
+        {{- if .volumeMounts }}
+        {{- with .volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
+
+        {{- if .volumes }}
+        {{- with .volumes }}
+        volumes:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
+
+      {{- end }}
+
+      

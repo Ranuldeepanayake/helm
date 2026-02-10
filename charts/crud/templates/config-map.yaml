@@ -1,0 +1,13 @@
+#A configmap will be created for each container regardless whether environment variables will be present or not.
+#This allows standardization and CI/CD.
+{{- range .Values.containers }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .name }}-{{ include "crud.fullname" $ }}
+data:
+{{- range $key, $value := index $.Values.env .name }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}

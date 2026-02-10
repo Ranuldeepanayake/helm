@@ -1,0 +1,102 @@
+#This is to override the chart name.
+nameOverride: ""  #Overrides the chart name.
+fullnameOverride: ""  #Overrides the fullname.
+
+#Autoscaler.
+replicaCount: 2 #Ignored when autoscaling is enabled.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 50
+
+#Custom labels to be added to all resources. Can query resources by these labels. 
+#These are different from selector labels since they are not used for selection.
+commonLabels:
+  environment: dev
+
+#Add custom metadata to pods. These are different from labels since they are not used for selection.
+#They are for informational purposes.
+podAnnotations: {}
+
+#Image pull secrets.
+imagePullSecrets:
+  - name: aws-ecr
+
+#Containers.
+containers:
+  - name: app
+    repository: public.ecr.aws/l4a5c1v5/qba/qba-back-end
+    tag: PLACEHOLDER
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: "125m"
+        memory: "64Mi"
+      limits:
+        cpu: "500m"
+        memory: "256Mi"
+    ports:
+      - name: http
+        containerPort: 3000
+        protocol: TCP
+    volumeMounts: []
+    # - name: foo
+    #   mountPath: "/etc/foo"
+    #   readOnly: true
+    volumes: []
+    # - name: foo
+    #   secret:
+    #     secretName: mysecret
+    #     optional: false
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+    secrets: []
+    configMapRef: [] #Referenced in the deployment eventhough empty here.
+    env: []
+
+#An empty env list is required importing .envs from value files by ArgoCD.
+env: {}
+
+#Services.
+service:
+  - name: api
+    type: ClusterIP
+    labels: {}
+    annotations: {}
+    ports:
+      - name: api
+        port: 80
+        targetPort: 3000
+
+#Ingresses.
+ingress:
+  enabled: true
+  className: nginx
+  labels: {}
+  annotations: {}
+  #nginx.ingress.kubernetes.io/rewrite-target: /$1
+  #nginx.ingress.kubernetes.io/use-regex: "true"
+  #nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+  hosts:
+    - host: crud.mydomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service:
+            name: api
+            port:
+              number: 80
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
