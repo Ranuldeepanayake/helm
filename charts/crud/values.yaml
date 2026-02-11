@@ -48,15 +48,10 @@ containers:
       - name: http
         containerPort: 80
         protocol: TCP
-    volumeMounts: []
+    # volumeMounts:
     # - name: foo
     #   mountPath: "/etc/foo"
     #   readOnly: true
-    volumes: []
-    # - name: foo
-    #   secret:
-    #     secretName: mysecret
-    #     optional: false
     livenessProbe:
       httpGet:
         path: /
@@ -78,6 +73,18 @@ containers:
     secrets: []
     configMapRef: [] #Referenced in the deployment eventhough empty here.
     env: []
+    command: []
+    #   - "/bin/sh"
+    #   - "-c"
+    args: []
+    #   - "while true; do curl http://localhost; done"
+
+#Volumes.
+volumes: []
+  # - name: token
+  #   secret:
+  #     secretName: master-token
+  #     optional: false
 
 #An empty env list is required importing .envs from value files by ArgoCD.
 env: {}
