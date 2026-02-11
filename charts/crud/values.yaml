@@ -13,6 +13,11 @@ autoscaling:
   targetCPUUtilizationPercentage: 50
   targetMemoryUtilizationPercentage: 50
 
+#Deployment
+deployment:
+  labels: {}
+  annotations: {}
+
 #Custom labels to be added to all resources. Can query resources by these labels. 
 #These are different from selector labels since they are not used for selection.
 commonLabels:
@@ -23,13 +28,14 @@ commonLabels:
 podAnnotations: {}
 
 #Image pull secrets.
-imagePullSecrets:
- - name: aws-ecr
+imagePullSecrets: []
+#  - name: aws-ecr
 
-#Deployment
-deployment:
-  labels: {}
-  annotations: {}
+terminationGracePeriodSeconds: 30
+podSecurityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
 
 #Containers.
 containers:
@@ -48,7 +54,7 @@ containers:
       - name: http
         containerPort: 80
         protocol: TCP
-    # volumeMounts:
+    volumeMounts: []
     # - name: foo
     #   mountPath: "/etc/foo"
     #   readOnly: true
@@ -70,9 +76,19 @@ containers:
       timeoutSeconds: 2
       failureThreshold: 2        # Mark not ready after 3 failures
       successThreshold: 1
+    securityContext: []
+      # runAsUser: 1000
+      # runAsGroup: 3000
+      # fsGroup: 2000
     secrets: []
-    configMapRef: [] #Referenced in the deployment eventhough empty here.
+      # - name: foo
+      #   secretKeyRef:
+      #     name: foo-secret
+      #     key: password
+      #     optional: false
     env: []
+      # - name: ENV_VAR
+      #   value: "value"
     command: []
     #   - "/bin/sh"
     #   - "-c"
