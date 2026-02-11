@@ -4,18 +4,24 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .name }}
-  labels:  
-    app.kubernetes.io/service-name: {{ .name }}
-    {{- include "crud.selectorLabels" $root | nindent 4 }}
-    {{- with $root.Values.commonLabels }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
+  name: {{ .name }}-{{ include "crud.fullname" $root }}
+  labels:
+  {{- include "crud.labels" $root | nindent 4 }}
+  {{- with $root.Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 
 spec:
   type: {{ .type | default "ClusterIP" }}
 
-  #Mandatory.
+  #Mandatory to target the correct pods.
   selector:
     {{- include "crud.selectorLabels" $root | nindent 4 }}
     

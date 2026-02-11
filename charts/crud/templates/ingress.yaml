@@ -1,21 +1,28 @@
-{{- if .Values.ingress.enabled }}
+{{- $root := . }}
+{{- range $i, $ing := .Values.ingress }}
+{{- if $ing.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "crud.fullname" . }}
+  name: {{ $ing.name }}-{{ include "crud.fullname" $root }}
   labels:
-    app.kubernetes.io/name: {{ include "crud.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- include "crud.labels"  $root | nindent 4 }}
+  {{- with  $root.Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $ing.labels }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with $ing.annotations }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.className }}
+  ingressClassName: {{ $ing.ingressClassName | default $root.Values.ingressClassName }}
 
-  {{- if .Values.ingress.tls }}
+  {{- with $ing.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
+    {{- range . }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -25,7 +32,7 @@ spec:
   {{- end }}
 
   rules:
-    {{- range .Values.ingress.hosts }}
+    {{- range $ing.hosts }}
     - host: {{ .host }}
       http:
         paths:
@@ -34,9 +41,11 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ .service.name }}
+                name: {{ .service.name }}-{{ include "crud.fullname" $root }}
                 port:
                   number: {{ .service.port.number }}
           {{- end }}
     {{- end }}
+---
+{{- end }}
 {{- end }}

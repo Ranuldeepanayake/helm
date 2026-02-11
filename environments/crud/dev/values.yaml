@@ -5,7 +5,9 @@ fullnameOverride: ""  #Overrides the fullname.
 #Autoscaler.
 replicaCount: 2 #Ignored when autoscaling is enabled.
 autoscaling:
-  enabled: false
+  enabled: true
+  labels: {}
+  annotations: {}
   minReplicas: 1
   maxReplicas: 3
   targetCPUUtilizationPercentage: 50
@@ -22,13 +24,18 @@ podAnnotations: {}
 
 #Image pull secrets.
 imagePullSecrets:
-  - name: aws-ecr
+ - name: aws-ecr
+
+#Deployment
+deployment:
+  labels: {}
+  annotations: {}
 
 #Containers.
 containers:
   - name: app
-    repository: public.ecr.aws/l4a5c1v5/qba/qba-back-end
-    tag: PLACEHOLDER
+    repository: nginx
+    tag: stable
     imagePullPolicy: IfNotPresent
     resources:
       requests:
@@ -39,7 +46,7 @@ containers:
         memory: "256Mi"
     ports:
       - name: http
-        containerPort: 3000
+        containerPort: 80
         protocol: TCP
     volumeMounts: []
     # - name: foo
@@ -55,10 +62,19 @@ containers:
         path: /
         port: http
       initialDelaySeconds: 15
+      periodSeconds: 10          # Check every 10s
+      timeoutSeconds: 3          # Give the request 5s to respond
+      failureThreshold: 3        # Restart after 3 consecutive failures
+      successThreshold: 1        # Consider healthy after 1 success
     readinessProbe:
       httpGet:
         path: /
         port: http
+      initialDelaySeconds: 10    # Allow app some startup time
+      periodSeconds: 5           # Check frequently to update readiness
+      timeoutSeconds: 2
+      failureThreshold: 2        # Mark not ready after 3 failures
+      successThreshold: 1
     secrets: []
     configMapRef: [] #Referenced in the deployment eventhough empty here.
     env: []
@@ -79,8 +95,9 @@ service:
 
 #Ingresses.
 ingress:
+- name: api
   enabled: true
-  className: nginx
+  ingressClassName: nginx
   labels: {}
   annotations: {}
   #nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -88,15 +105,46 @@ ingress:
   #nginx.ingress.kubernetes.io/ssl-redirect: "false"
   #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
   hosts:
-    - host: crud.mydomain.com
-      paths:
-        - path: /
-          pathType: Prefix
-          service:
-            name: api
-            port:
-              number: 80
+  - host: crud.mydomain.com
+    paths:
+      - path: /
+        pathType: Prefix
+        service:
+          name: api
+          port:
+            number: 80
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    # - hosts:
+    #     - app.example.com
+    #   secretName: app-tls
+
+#Service accounts.
+serviceAccount:
+  create: true 
+  name: crud
+  labels: {}
+  annotations: {}
+  #Prevents mounting a kubenertes token at /var/run/secrets/kubernetes.io/serviceaccount/token in the container.
+  #Therefore, even if RBAC permissions are accidentally granted, the application will not be able to access the Kubernetes API.
+  automountServiceAccountToken: false 
+# - name: worker-sa
+#   annotations:
+#     eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/my-api-role
+
+#Role.
+role:
+  create: true
+  name: crud
+  labels: {}
+  annotations: {}
+  rules:
+    - apiGroups: [""]
+      resources: ["configmaps"]
+      verbs: ["get", "list", "watch"]
+
+#Role binding.
+roleBinding:
+  create: true
+  name: crud
+  labels: {}
+  annotations: {}

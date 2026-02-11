@@ -3,10 +3,17 @@ kind: Deployment
 metadata:
   name: {{ include "crud.fullname" . }}
   labels:
-    {{- include "crud.labels" . | nindent 4 }}
-    {{- with .Values.commonLabels }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
+  {{- include "crud.labels" . | nindent 4 }}
+  {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.deployment.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.deployment.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 
 spec:
   {{- if not .Values.autoscaling.enabled }}
@@ -29,20 +36,24 @@ spec:
 
   template:
     metadata:
+      #These are labels attached specifically to pods. They must include the selector labels plus additonal
+      #labels for extra information.
+      labels:
+      {{- include "crud.labels" . | nindent 8 }} #labels include selector labels too in _helpers.tpl.
+      {{- include "crud.selectorLabels" . | nindent 8 }}
+      {{- with .Values.commonLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-
-      #These are labels attached specifically to pods. 
-      #There can be user configurable pods for extra information.
-      labels:
-        {{- include "crud.selectorLabels" . | nindent 8 }}
-        {{- with .Values.commonLabels }}
-          {{- toYaml . | nindent 8 }}
-        {{- end }}
-        
+    
     spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-{{ include "crud.fullname" . }}
+      {{- end }}
+
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
