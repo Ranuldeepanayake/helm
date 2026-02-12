@@ -1,3 +1,4 @@
+#Binds a role to a serviceaccount.
 {{- if .Values.roleBinding.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

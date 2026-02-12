@@ -1,3 +1,4 @@
+#Directs HTTP/HTTPS traffic into services.
 {{- $root := . }}
 {{- range $i, $ing := .Values.ingress }}
 {{- if $ing.enabled }}

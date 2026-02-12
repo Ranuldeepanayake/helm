@@ -1,3 +1,4 @@
+#Scales out replicas according to metrics such as CPU and memory usage.
 {{- if .Values.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler

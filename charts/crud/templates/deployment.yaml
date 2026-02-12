@@ -1,3 +1,4 @@
+#A deployment can only consist of one pod specification.
 apiVersion: apps/v1
 kind: Deployment
 metadata:

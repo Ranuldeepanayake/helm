@@ -1,3 +1,7 @@
+#This is a customizable Helm chart template. It creates a configmap per container to make it easy to inject environment variables through ArgoCD.
+#A single serviceaccount, role and role binding can be automatically creating by setting the respective create flags.
+#Volume mounts, volumes and PVCs must be correctly specified.
+
 #This is to override the chart name.
 nameOverride: ""  #Overrides the chart name.
 fullnameOverride: ""  #Overrides the fullname.
@@ -10,7 +14,7 @@ autoscaling:
   annotations: {}
   minReplicas: 1
   maxReplicas: 3
-  targetCPUUtilizationPercentage: 50
+  targetCPUUtilizationPercentage: 50    #Is a percentage of container resource requests. 
   targetMemoryUtilizationPercentage: 50
 
 #Deployment
@@ -38,13 +42,13 @@ tolerations: []
 affinity: {}
 
 #Init containers.
-initContainers:
-  - name: init-logs
-    image: busybox:1.36
-    command: ["sh", "-c", "mkdir -p /var/log/nginx && chown -R 101:101 /var/log/nginx"]
-    volumeMounts:
-      - name: logs-app
-        mountPath: /var/log/nginx
+initContainers: []
+  # - name: init-logs
+  #   image: busybox:1.36
+  #   command: ["sh", "-c", "mkdir -p /var/log/nginx && chown -R 101:101 /var/log/nginx"]
+  #   volumeMounts:
+  #     - name: logs-app
+  #       mountPath: /var/log/nginx
 
 #Containers.
 containers:
@@ -53,41 +57,41 @@ containers:
     tag: stable
     imagePullPolicy: IfNotPresent
     resources:
-      requests:
-        cpu: "125m"
-        memory: "64Mi"
+      requests:         #Minimum guaranteed resources for the container to run. Also used by the HPA.
+        cpu: "64m"     
+        memory: "32Mi"
       limits:
-        cpu: "500m"
+        cpu: "125m"
         memory: "256Mi"
     ports:
       - name: http
         containerPort: 80
         protocol: TCP
-    volumeMounts:
+    volumeMounts: []
     # - name: vault-token-app
     #   mountPath: "/run/secrets/vault-token"
     #   readOnly: true
-    - name: logs-app
-      mountPath: "/var/log/nginx"
-      readOnly: false
+    # - name: logs-app
+    #   mountPath: "/var/log/nginx"
+    #   readOnly: false
     livenessProbe:
       httpGet:
         path: /
         port: http
-      initialDelaySeconds: 15
-      periodSeconds: 10          # Check every 10s
-      timeoutSeconds: 3          # Give the request 5s to respond
+      initialDelaySeconds: 30
+      periodSeconds: 15          # Check every 15s
+      timeoutSeconds: 5          # Give the request 5s to respond
       failureThreshold: 3        # Restart after 3 consecutive failures
       successThreshold: 1        # Consider healthy after 1 success
     readinessProbe:
       httpGet:
         path: /
         port: http
-      initialDelaySeconds: 10    # Allow app some startup time
-      periodSeconds: 5           # Check frequently to update readiness
+      initialDelaySeconds: 15    
+      periodSeconds: 5           
       timeoutSeconds: 2
-      failureThreshold: 2        # Mark not ready after 3 failures
-      successThreshold: 1
+      failureThreshold: 3       
+      successThreshold: 2
     securityContext: []
       # runAsUser: 1000
       # runAsGroup: 3000
@@ -108,25 +112,25 @@ containers:
     #   - "while true; do curl http://localhost; done"
 
 #Volumes.
-volumes:
+volumes: []
   # - name: vault-token-app
   #   secret:
   #     secretName: master-token
   #     optional: false
-  - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
-    persistentVolumeClaim:
-      claimName: logs-app-crud
+  # - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
+  #   persistentVolumeClaim:
+  #     claimName: logs-app-crud
 
-#PVCs
+#PVCs. PVCs created by a Helm deployment will be deleted when the Helm release is deleted but will not delete for statefulsets unless explicitly stated.
 pvc:
-  create: true
-  list:
-    - name: logs-app-crud
-      size: 256Mi #1Gi
-      accessModes:
-        - ReadWriteOnce
-      storageClassName: ""
-      existingClaim: ""           #If set, chart will not create PVC
+  create: false
+  # list:
+  #   - name: logs-app-crud
+  #     size: 256Mi #1Gi
+  #     accessModes:
+  #       - ReadWriteOnce
+  #     storageClassName: ""
+  #     existingClaim: ""           #If set, chart will not create PVC
 
 #An empty env list is required importing .envs from value files by ArgoCD.
 env: {}
@@ -187,10 +191,10 @@ role:
   name: crud
   labels: {}
   annotations: {}
-  rules:
-    - apiGroups: [""]
-      resources: ["configmaps"]
-      verbs: ["get", "list", "watch"]
+  rules: []
+    # - apiGroups: [""]
+    #   resources: ["configmaps"]
+    #   verbs: ["get", "list", "watch"]
 
 #Role binding.
 roleBinding:
