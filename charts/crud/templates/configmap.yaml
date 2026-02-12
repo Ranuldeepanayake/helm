@@ -7,7 +7,10 @@ kind: ConfigMap
 metadata:
   name: {{ .name }}-{{ include "crud.fullname" $ }}
 data:
-{{- range $key, $value := index $.Values.env .name }}
+{{- $containerEnv := index $.Values.env .name }}
+{{- if $containerEnv }}
+{{- range $key, $value := $containerEnv }}
   {{ $key }}: {{ $value | quote }}
+{{- end }}
 {{- end }}
 {{- end }}

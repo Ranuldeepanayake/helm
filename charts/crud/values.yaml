@@ -37,6 +37,15 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+#Init containers.
+initContainers:
+  - name: init-logs
+    image: busybox:1.36
+    command: ["sh", "-c", "mkdir -p /var/log/nginx && chown -R 101:101 /var/log/nginx"]
+    volumeMounts:
+      - name: logs-app
+        mountPath: /var/log/nginx
+
 #Containers.
 containers:
   - name: app
@@ -54,10 +63,13 @@ containers:
       - name: http
         containerPort: 80
         protocol: TCP
-    volumeMounts: []
-    # - name: foo
-    #   mountPath: "/etc/foo"
+    volumeMounts:
+    # - name: vault-token-app
+    #   mountPath: "/run/secrets/vault-token"
     #   readOnly: true
+    - name: logs-app
+      mountPath: "/var/log/nginx"
+      readOnly: false
     livenessProbe:
       httpGet:
         path: /
@@ -96,11 +108,25 @@ containers:
     #   - "while true; do curl http://localhost; done"
 
 #Volumes.
-volumes: []
-  # - name: token
+volumes:
+  # - name: vault-token-app
   #   secret:
   #     secretName: master-token
   #     optional: false
+  - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
+    persistentVolumeClaim:
+      claimName: logs-app-crud
+
+#PVCs
+pvc:
+  create: true
+  list:
+    - name: logs-app-crud
+      size: 256Mi #1Gi
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: ""
+      existingClaim: ""           #If set, chart will not create PVC
 
 #An empty env list is required importing .envs from value files by ArgoCD.
 env: {}
@@ -114,7 +140,7 @@ service:
     ports:
       - name: api
         port: 80
-        targetPort: 3000
+        targetPort: 80
 
 #Ingresses.
 ingress:
@@ -122,11 +148,12 @@ ingress:
   enabled: true
   ingressClassName: nginx
   labels: {}
-  annotations: {}
-  #nginx.ingress.kubernetes.io/rewrite-target: /$1
-  #nginx.ingress.kubernetes.io/use-regex: "true"
-  #nginx.ingress.kubernetes.io/ssl-redirect: "false"
-  #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+  annotations:
+    #nginx.ingress.kubernetes.io/rewrite-target: /$1
+    #nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
   hosts:
   - host: crud.mydomain.com
     paths:

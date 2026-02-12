@@ -19,7 +19,6 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
-
   #These are labels to select which pods must come under a deployment. 
   #Selector labels must never be configurable. It is best to use the variables
   #provided by the chart. Selector labels are usually defined in the _helpers.tpl file and are used for selection purposes only.
@@ -34,8 +33,7 @@ spec:
       #These are labels attached specifically to pods. They must include the selector labels plus additonal
       #labels for extra information.
       labels:
-      {{- include "crud.labels" . | nindent 8 }} #labels include selector labels too in _helpers.tpl.
-      {{- include "crud.selectorLabels" . | nindent 8 }}
+      {{- include "crud.labels" . | nindent 8 }} #labels include selector labels too in _helpers.tpl. #{{- include "crud.selectorLabels" . | nindent 8 }}
       {{- with .Values.commonLabels }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -61,47 +59,68 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
+      #Init containers which run before main containers.
+      {{- with .Values.initContainers }}
+      initContainers:
+      {{- range . }}
+      - name: {{ .name }}
+        image: {{ .image }}
+        {{- with .resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .env }}
+        env:
+        {{- range . }}
+          - name: {{ .name }}
+            value: {{ .value | quote }}
+        {{- end }}
+        {{- end }}
+        {{- with .command }}
+        command:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .args }}
+        args:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+
+      #Main containers.
       containers:
       {{- range .Values.containers }}
       - name: {{ .name }}
         image: "{{ .repository }}:{{ .tag }}"
         imagePullPolicy: {{ .imagePullPolicy }}
 
-        {{- if .resources }}
         {{- with .resources }}
         resources:
           {{- toYaml . | nindent 12 }}
         {{- end }}
-        {{- end }}
         
-        {{- if .ports }}
+        {{- with .ports }}
         ports:
-        {{- range .ports }}
+        {{- range . }}
           - name: {{ .name }}
             containerPort: {{ .containerPort }}
             protocol: {{ .protocol }}
         {{- end }}
         {{- end }}
 
-        {{- if .volumeMounts }}
         {{- with .volumeMounts }}
         volumeMounts:
           {{- toYaml . | nindent 12 }}
         {{- end }}
-        {{- end }}
 
-        {{- if .livenessProbe }}
         {{- with .livenessProbe }}
         livenessProbe:
           {{- toYaml . | nindent 12 }}
         {{- end }}
-        {{- end }}
 
-        {{- if .readinessProbe }}
         {{- with .readinessProbe }}
         readinessProbe:
           {{- toYaml . | nindent 12 }}
-        {{- end }}
         {{- end }}
 
         {{- with .securityContext }}
@@ -109,14 +128,13 @@ spec:
         {{- toYaml . | nindent 12 }}
         {{- end }}
 
-        {{- if .env }}
+        {{- with .env }}
         env:
-        {{- range .env }}
+        {{- range . }}
           - name: {{ .name }}
             value: {{ .value | quote }}
         {{- end }}
         {{- end }}
-
         #This is for referencing the config map for environment variables. 
         #It is optional and will not cause any issues if the config map is not present.
         #A conditional include is not set since there will be one config map per container.
@@ -126,22 +144,21 @@ spec:
               name: {{ .name }}-{{ include "crud.fullname" $ }}
               optional: true
 
-        {{- if .command }}
+        {{- with .command }}
         command:
-          {{- toYaml .command | nindent 12 }}
+          {{- toYaml . | nindent 12 }}
         {{- end }}
 
-        {{- if .args }}
+        {{- with .args }}
         args:
-          {{- toYaml .args | nindent 12 }}
+          {{- toYaml . | nindent 12 }}
         {{- end }}
 
       {{- end }}
-
       #Volumes live at the same level as containers in the pod spec. They are referenced in the container spec as volumeMounts.
       {{- with .Values.volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 12 }}
       {{- end }}
 
       {{- with .Values.nodeSelector }}
