@@ -112,7 +112,7 @@ containers:
     #   - "while true; do curl http://localhost; done"
 
 #Volumes.
-volumes: []
+volumes:
   - name: vault-token-app
     secret:
       secretName: vault-token-app-secret
