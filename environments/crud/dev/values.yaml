@@ -48,7 +48,7 @@ initContainers: []
 containers:
   - name: app
     repository: public.ecr.aws/l4a5c1v5/crud/app
-    tag: 1.0.0-DEVELOP-SNAPSHOT-20260213_211753-COMMITSHA_2bd13048
+    tag: 1.0.0-DEVELOP-SNAPSHOT-20260213_215357-COMMITSHA_f0f620c0
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
