@@ -1,6 +1,6 @@
 #This is a customizable Helm chart template. It creates a configmap per container to make it easy to inject environment variables through ArgoCD.
 #A single serviceaccount, role and role binding can be automatically creating by setting the respective create flags.
-#Volume mounts, volumes and PVCs must be correctly specified.
+#Volume mounts, volumes and PVCs must be correctly specified. Requires the namespace to be pre-created to support the serviceaccount (if used).
 
 #This is to override the chart name.
 nameOverride: ""  #Overrides the chart name.

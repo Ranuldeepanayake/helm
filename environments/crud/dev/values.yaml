@@ -1,6 +1,6 @@
 #This is a customizable Helm chart template. It creates a configmap per container to make it easy to inject environment variables through ArgoCD.
 #A single serviceaccount, role and role binding can be automatically creating by setting the respective create flags.
-#Volume mounts, volumes and PVCs must be correctly specified.
+#Volume mounts, volumes and PVCs must be correctly specified. Requires the namespace to be pre-created to support the serviceaccount (if used).
 
 #This is to override the chart name.
 nameOverride: ""  #Overrides the chart name.
@@ -53,8 +53,8 @@ initContainers: []
 #Containers.
 containers:
   - name: app
-    repository: nginx
-    tag: stable
+    repository: public.ecr.aws/l4a5c1v5/crud/app
+    tag: PLACEHOLDER
     imagePullPolicy: IfNotPresent
     resources:
       requests:         #Minimum guaranteed resources for the container to run. Also used by the HPA.
@@ -65,12 +65,12 @@ containers:
         memory: "256Mi"
     ports:
       - name: http
-        containerPort: 80
+        containerPort: 3000
         protocol: TCP
-    volumeMounts: []
-    # - name: vault-token-app
-    #   mountPath: "/run/secrets/vault-token"
-    #   readOnly: true
+    volumeMounts:
+    - name: vault-token-app
+      mountPath: "/etc/secrets"
+      readOnly: true
     # - name: logs-app
     #   mountPath: "/var/log/nginx"
     #   readOnly: false
@@ -113,10 +113,10 @@ containers:
 
 #Volumes.
 volumes: []
-  # - name: vault-token-app
-  #   secret:
-  #     secretName: master-token
-  #     optional: false
+  - name: vault-token-app
+    secret:
+      secretName: vault-token-app-secret
+      optional: false
   # - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
   #   persistentVolumeClaim:
   #     claimName: logs-app-crud
