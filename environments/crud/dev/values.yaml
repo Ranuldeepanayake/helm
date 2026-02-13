@@ -13,8 +13,8 @@ autoscaling:
   annotations: {}
   minReplicas: 1
   maxReplicas: 3
-  targetCPUUtilizationPercentage: 50 #Is a percentage of container resource requests. 
-  targetMemoryUtilizationPercentage: 50
+  targetCPUUtilizationPercentage: 75 #Is a percentage of container resource requests. 
+  targetMemoryUtilizationPercentage: 75
 #Deployment
 deployment:
   labels: {}
