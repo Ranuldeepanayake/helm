@@ -3,9 +3,8 @@
 #Volume mounts, volumes and PVCs must be correctly specified. Requires the namespace to be pre-created to support the serviceaccount (if used).
 
 #This is to override the chart name.
-nameOverride: ""  #Overrides the chart name.
-fullnameOverride: ""  #Overrides the fullname.
-
+nameOverride: "" #Overrides the chart name.
+fullnameOverride: "" #Overrides the fullname.
 #Autoscaler.
 replicaCount: 2 #Ignored when autoscaling is enabled.
 autoscaling:
@@ -14,23 +13,19 @@ autoscaling:
   annotations: {}
   minReplicas: 1
   maxReplicas: 3
-  targetCPUUtilizationPercentage: 50    #Is a percentage of container resource requests. 
+  targetCPUUtilizationPercentage: 50 #Is a percentage of container resource requests. 
   targetMemoryUtilizationPercentage: 50
-
 #Deployment
 deployment:
   labels: {}
   annotations: {}
-
 #Custom labels to be added to all resources. Can query resources by these labels. 
 #These are different from selector labels since they are not used for selection.
 commonLabels:
   environment: dev
-
 #Add custom metadata to pods. These are different from labels since they are not used for selection.
 #They are for informational purposes.
 podAnnotations: {}
-
 #Image pull secrets.
 imagePullSecrets: []
 #  - name: aws-ecr
@@ -40,25 +35,24 @@ podSecurityContext: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
 #Init containers.
 initContainers: []
-  # - name: init-logs
-  #   image: busybox:1.36
-  #   command: ["sh", "-c", "mkdir -p /var/log/nginx && chown -R 101:101 /var/log/nginx"]
-  #   volumeMounts:
-  #     - name: logs-app
-  #       mountPath: /var/log/nginx
+# - name: init-logs
+#   image: busybox:1.36
+#   command: ["sh", "-c", "mkdir -p /var/log/nginx && chown -R 101:101 /var/log/nginx"]
+#   volumeMounts:
+#     - name: logs-app
+#       mountPath: /var/log/nginx
 
 #Containers.
 containers:
   - name: app
     repository: public.ecr.aws/l4a5c1v5/crud/app
-    tag: PLACEHOLDER
+    tag: 1.0.0-DEVELOP-SNAPSHOT-20260213_211753-COMMITSHA_2bd13048
     imagePullPolicy: IfNotPresent
     resources:
-      requests:         #Minimum guaranteed resources for the container to run. Also used by the HPA.
-        cpu: "64m"     
+      requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
+        cpu: "64m"
         memory: "32Mi"
       limits:
         cpu: "125m"
@@ -68,9 +62,9 @@ containers:
         containerPort: 3000
         protocol: TCP
     volumeMounts:
-    - name: vault-token-app
-      mountPath: "/etc/secrets"
-      readOnly: true
+      - name: vault-token-app
+        mountPath: "/etc/secrets"
+        readOnly: true
     # - name: logs-app
     #   mountPath: "/var/log/nginx"
     #   readOnly: false
@@ -79,47 +73,46 @@ containers:
         path: /
         port: http
       initialDelaySeconds: 30
-      periodSeconds: 15          # Check every 15s
-      timeoutSeconds: 5          # Give the request 5s to respond
-      failureThreshold: 3        # Restart after 3 consecutive failures
-      successThreshold: 1        # Consider healthy after 1 success
+      periodSeconds: 15 # Check every 15s
+      timeoutSeconds: 5 # Give the request 5s to respond
+      failureThreshold: 3 # Restart after 3 consecutive failures
+      successThreshold: 1 # Consider healthy after 1 success
     readinessProbe:
       httpGet:
         path: /
         port: http
-      initialDelaySeconds: 15    
-      periodSeconds: 5           
+      initialDelaySeconds: 15
+      periodSeconds: 5
       timeoutSeconds: 2
-      failureThreshold: 3       
+      failureThreshold: 3
       successThreshold: 2
     securityContext: []
-      # runAsUser: 1000
-      # runAsGroup: 3000
-      # fsGroup: 2000
+    # runAsUser: 1000
+    # runAsGroup: 3000
+    # fsGroup: 2000
     secrets: []
-      # - name: foo
-      #   secretKeyRef:
-      #     name: foo-secret
-      #     key: password
-      #     optional: false
+    # - name: foo
+    #   secretKeyRef:
+    #     name: foo-secret
+    #     key: password
+    #     optional: false
     env: []
-      # - name: ENV_VAR
-      #   value: "value"
+    # - name: ENV_VAR
+    #   value: "value"
     command: []
     #   - "/bin/sh"
     #   - "-c"
     args: []
     #   - "while true; do curl http://localhost; done"
-
 #Volumes.
 volumes:
   - name: vault-token-app
     secret:
       secretName: vault-token-app-secret
       optional: false
-  # - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
-  #   persistentVolumeClaim:
-  #     claimName: logs-app-crud
+# - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
+#   persistentVolumeClaim:
+#     claimName: logs-app-crud
 
 #PVCs. PVCs created by a Helm deployment will be deleted when the Helm release is deleted but will not delete for statefulsets unless explicitly stated.
 pvc:
@@ -131,10 +124,8 @@ pvc:
   #       - ReadWriteOnce
   #     storageClassName: ""
   #     existingClaim: ""           #If set, chart will not create PVC
-
 #An empty env list is required importing .envs from value files by ArgoCD.
 env: {}
-
 #Services.
 service:
   - name: api
@@ -145,42 +136,40 @@ service:
       - name: api
         port: 80
         targetPort: 80
-
 #Ingresses.
 ingress:
-- name: api
-  enabled: true
-  ingressClassName: nginx
-  labels: {}
-  annotations:
-    #nginx.ingress.kubernetes.io/rewrite-target: /$1
-    #nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-    #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
-  hosts:
-  - host: crud.mydomain.com
-    paths:
-      - path: /
-        pathType: Prefix
-        service:
-          name: api
-          port:
-            number: 80
-  tls: []
+  - name: api
+    enabled: true
+    ingressClassName: nginx
+    labels: {}
+    annotations:
+      #nginx.ingress.kubernetes.io/rewrite-target: /$1
+      #nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+    hosts:
+      - host: crud.mydomain.com
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              name: api
+              port:
+                number: 80
+    tls: []
     # - hosts:
     #     - app.example.com
     #   secretName: app-tls
-
 #Service accounts.
 serviceAccount:
-  create: true 
+  create: true
   name: crud
   labels: {}
   annotations: {}
   #Prevents mounting a kubenertes token at /var/run/secrets/kubernetes.io/serviceaccount/token in the container.
   #Therefore, even if RBAC permissions are accidentally granted, the application will not be able to access the Kubernetes API.
-  automountServiceAccountToken: false 
+  automountServiceAccountToken: false
 # - name: worker-sa
 #   annotations:
 #     eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/my-api-role
@@ -192,10 +181,9 @@ role:
   labels: {}
   annotations: {}
   rules: []
-    # - apiGroups: [""]
-    #   resources: ["configmaps"]
-    #   verbs: ["get", "list", "watch"]
-
+  # - apiGroups: [""]
+  #   resources: ["configmaps"]
+  #   verbs: ["get", "list", "watch"]
 #Role binding.
 roleBinding:
   create: true
