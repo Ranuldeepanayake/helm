@@ -53,7 +53,7 @@ containers:
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
         cpu: "32m"
-        memory: "128Mi"
+        memory: "64Mi"
       limits:
         cpu: "125m"
         memory: "256Mi"
