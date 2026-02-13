@@ -52,8 +52,8 @@ containers:
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
-        cpu: "64m"
-        memory: "32Mi"
+        cpu: "32m"
+        memory: "64Mi"
       limits:
         cpu: "125m"
         memory: "256Mi"
