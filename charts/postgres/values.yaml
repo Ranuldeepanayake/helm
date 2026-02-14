@@ -5,40 +5,58 @@
 #or
 #helm upgrade --install postgres bitnami/postgresql -f values.yaml
 
-auth:
-  username: appuser
-  password: supersecurepassword
-  database: appdb
+#If high availability is needed.
+#architecture: replication
+architecture: standalone
 
 primary:
   persistence:
     enabled: true
     storageClass: local-path
     size: 1Gi
-
   resources:
     requests:
       cpu: 250m
-      memory: 512Mi
+      memory: 256Mi
     limits:
       cpu: 500m
       memory: 1Gi
+  service:
+    type: LoadBalancer
+    loadBalancerIP: 192.168.56.200
+    ports:
+      postgresql: 5432
+  # service:
+  #   type: clusterIP
+  #   ports:
+  #     postgresql: 5432
 
-service:
-  type: LoadBalancer
-  ports:
-    postgresql: 5432
+readReplicas:
+  replicaCount: 1
+  persistence:
+    enabled: true
+    storageClass: local-path
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  # service:
+  #   type: LoadBalancer
+  #   loadBalancerIP: 192.168.56.201
+  #   ports:
+  #     postgresql: 5432
+  # service:
+  #   type: clusterIP
+  #   ports:
+  #     postgresql: 5432
+
+auth:
+  username: ranul
+  password: ranul@123
+  database: student
 
 
-#If high availability is needed.
-# architecture: replication
-
-# readReplicas:
-#   replicaCount: 2
-#   resources:
-#     requests:
-#       cpu: 500m
-#       memory: 1Gi
-#     limits:
-#       cpu: 1
-#       memory: 2Gi
