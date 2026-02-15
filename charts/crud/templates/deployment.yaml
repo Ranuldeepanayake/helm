@@ -20,6 +20,12 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  
   #These are labels to select which pods must come under a deployment. 
   #Selector labels must never be configurable. It is best to use the variables
   #provided by the chart. Selector labels are usually defined in the _helpers.tpl file and are used for selection purposes only.

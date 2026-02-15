@@ -40,4 +40,30 @@ spec:
           type: Utilization
           averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
+
+  {{- if or .Values.autoscaling.scaleUp .Values.autoscaling.scaleDown }}
+  behavior:
+    {{- with .Values.autoscaling.scaleUp }}
+    scaleUp:
+      {{- if .stabilizationWindowSeconds }}
+      stabilizationWindowSeconds: {{ .stabilizationWindowSeconds }}
+      {{- end }}
+      {{- if .policies }}
+      policies:
+        {{- toYaml .policies | nindent 8 }}
+      {{- end }}
+      {{- end }}
+
+    {{- with .Values.autoscaling.scaleDown }}
+    scaleDown:
+      {{- if .stabilizationWindowSeconds }}
+      stabilizationWindowSeconds: {{ .stabilizationWindowSeconds }}
+      {{- end }}
+      {{- if .policies }}
+      policies:
+        {{- toYaml .policies | nindent 8 }}
+      {{- end }}
+      {{- end }}
+  {{- end }}
+
 {{- end }}

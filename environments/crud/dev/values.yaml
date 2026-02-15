@@ -5,8 +5,14 @@
 #This is to override the chart name.
 nameOverride: "" #Overrides the chart name.
 fullnameOverride: "" #Overrides the fullname.
+
+#Deployment
+deployment:
+  labels: {}
+  annotations: {}
+
 #Autoscaler.
-replicaCount: 2 #Ignored when autoscaling is enabled.
+replicaCount: 1 #Ignored when autoscaling is enabled.
 autoscaling:
   enabled: true
   labels: {}
@@ -15,17 +21,35 @@ autoscaling:
   maxReplicas: 3
   targetCPUUtilizationPercentage: 75 #Is a percentage of container resource requests. 
   targetMemoryUtilizationPercentage: 75
-#Deployment
-deployment:
-  labels: {}
-  annotations: {}
+  scaleUp:
+    stabilizationWindowSeconds: 0   #How long to wait before scaling up after utilization has exceeded.
+    policies:
+      - type: Percent
+        value: 100                  #Allow scaling up 100% of current replicas every 15 seconds.
+        periodSeconds: 15
+  scaleDown:
+    stabilizationWindowSeconds: 300 #How long to wait before scaling down after utilization has receded.
+    policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60           #Allow scaling down 50% of current replicas every 60 seconds.
+
+#Update strategy.
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 25%
+    maxUnavailable: 25%
+
 #Custom labels to be added to all resources. Can query resources by these labels. 
 #These are different from selector labels since they are not used for selection.
 commonLabels:
   environment: dev
+
 #Add custom metadata to pods. These are different from labels since they are not used for selection.
 #They are for informational purposes.
 podAnnotations: {}
+
 #Image pull secrets.
 imagePullSecrets: []
 #  - name: aws-ecr
@@ -104,6 +128,7 @@ containers:
     #   - "-c"
     args: []
     #   - "while true; do curl http://localhost; done"
+
 #Volumes.
 volumes:
   - name: vault-token-app
@@ -125,6 +150,7 @@ pvc:
   #     storageClassName: ""
   #     existingClaim: ""           #If set, chart will not create PVC
 #An empty env list is required importing .envs from value files by ArgoCD.
+
 env: {}
 #Services.
 service:
@@ -136,6 +162,7 @@ service:
       - name: api
         port: 80
         targetPort: 80
+
 #Ingresses.
 ingress:
   - name: api
@@ -161,6 +188,7 @@ ingress:
     # - hosts:
     #     - app.example.com
     #   secretName: app-tls
+
 #Service accounts.
 serviceAccount:
   create: true

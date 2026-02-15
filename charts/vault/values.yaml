@@ -1,0 +1,93 @@
+# helm repo add hashicorp https://helm.releases.hashicorp.com
+# helm repo update
+# helm install vault hashicorp/vault -f values.yaml
+
+# kubectl create secret tls vault-tls \
+#   --cert=path/to/tls.crt \
+#   --key=path/to/tls.key
+
+server:
+  # Enable HA mode with Raft
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      config: |
+        ui = true
+        listener "tcp" {
+          address     = "0.0.0.0:8200"
+          tls_disable = 0
+          tls_cert_file = "/vault/userconfig/vault-tls/tls.crt"
+          tls_key_file  = "/vault/userconfig/vault-tls/tls.key"
+        }
+        storage "raft" {
+          path    = "/vault/data"
+        }
+        service_registration "kubernetes" {}
+
+  # Persistent storage
+  dataStorage:
+    enabled: true
+    storageClass: local-path
+    size: 1Gi
+
+  # Ingress configuration with TLS
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - host: vault.mydomain.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - vault.mydomain.com
+        secretName: vault-tls
+
+  # Mount TLS secret into Vault pods
+  extraVolumes:
+    - name: vault-tls
+      secret:
+        secretName: vault-tls
+
+  extraVolumeMounts:
+    - name: vault-tls
+      mountPath: /vault/userconfig/vault-tls
+      readOnly: true
+
+  # Health probes
+  readinessProbe:
+    enabled: true
+    path: /v1/sys/health
+    port: 8200
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+
+  livenessProbe:
+    enabled: true
+    path: /v1/sys/health?standbyok=true&sealedcode=204
+    port: 8200
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+
+# Enable Vault UI
+ui:
+  enabled: true
+
+# Prometheus ServiceMonitor
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: prometheus
+    interval: 30s
+    scrapeTimeout: 10s
