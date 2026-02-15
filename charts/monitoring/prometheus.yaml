@@ -1,0 +1,46 @@
+# Prometheus & Grafana
+# helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+# helm repo add grafana https://grafana.github.io/helm-charts
+# helm repo update
+
+#This will install Prometheus, Alertmanager, Node Exporter, and Grafana in the monitoring
+
+# helm install prometheus-stack prometheus-community/kube-prometheus-stack \
+#   --namespace monitoring --create-namespace \
+#   --set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage=1Gi \
+#   --set grafana.persistence.enabled=true \
+#   --set grafana.persistence.size=1Gi
+
+#Deafult credentials.
+# user: admin
+# password: prom-operator
+
+# helm install prometheus-stack prometheus-community/kube-prometheus-stack \
+#   --namespace monitoring --create-namespace \
+#   -f prometheus-values.yaml
+
+# Prometheus configuration
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "local-path"  # your cluster's storage class
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+
+# Grafana configuration
+grafana:
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClassName: "standard"
+  adminUser: admin
+  adminPassword: secretpassword123
+  # Optional: enable dashboards provisioning
+  dashboards:
+    default:
+      my-dashboard.json:
+        url: https://raw.githubusercontent.com/grafana/dashboards/master/dashboards/example.json

@@ -1,0 +1,32 @@
+#Install loki
+# helm install loki grafana/loki-stack \
+#   --namespace monitoring \
+#   --set grafana.enabled=true \
+#   --set promtail.enabled=true
+#   --set persistence.enabled=true \
+#   --set persistence.size=1Gi
+
+# helm upgrade loki grafana/loki-stack \
+#   --namespace monitoring \
+#   --set persistence.enabled=true \
+#   --set persistence.size=1Gi
+
+
+#Add loki as a data source.
+#http://loki:3100
+
+# helm install loki grafana/loki-stack \
+#   --namespace monitoring \
+#   -f loki-values.yaml
+
+loki:
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClassName: "standard"
+
+promtail:
+  enabled: true
+
+grafana:
+  enabled: true  # optional, installs Grafana integrated with Loki
