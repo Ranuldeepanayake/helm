@@ -168,7 +168,7 @@ ingress:
       #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
     hosts:
-      - host: crud.mydomain.com
+      - host: dev.crud.mydomain.com
         paths:
           - path: /
             pathType: Prefix
