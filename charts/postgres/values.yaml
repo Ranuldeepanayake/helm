@@ -4,6 +4,7 @@
 #helm install postgres bitnami/postgresql -f values.yaml
 #or
 #helm upgrade --install postgres bitnami/postgresql -f values.yaml
+#Endpoint: <service-name>.<namespace>.svc.cluster.local:5432
 
 #If high availability is needed.
 #architecture: replication
@@ -31,19 +32,19 @@ primary:
   #   ports:
   #     postgresql: 5432
 
-readReplicas:
-  replicaCount: 1
-  persistence:
-    enabled: true
-    storageClass: local-path
-    size: 1Gi
-  resources:
-    requests:
-      cpu: 250m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 1Gi
+# readReplicas:
+#   replicaCount: 1
+#   persistence:
+#     enabled: true
+#     storageClass: local-path
+#     size: 1Gi
+#   resources:
+#     requests:
+#       cpu: 250m
+#       memory: 256Mi
+#     limits:
+#       cpu: 500m
+#       memory: 1Gi
   # service:
   #   type: LoadBalancer
   #   loadBalancerIP: 192.168.56.201
@@ -55,8 +56,9 @@ readReplicas:
   #     postgresql: 5432
 
 auth:
-  username: ranul
-  password: ranul@123
-  database: student
+  #postgresPassword: mySuperSecret  #Password of the postgres user.
+  username: ranul     #A standard db user.
+  password: ranul@123 #A password for the standard db user.
+  database: student   #A db for the standard user..
 
 

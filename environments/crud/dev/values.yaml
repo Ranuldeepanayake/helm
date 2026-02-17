@@ -154,7 +154,7 @@ service:
     ports:
       - name: api
         port: 80
-        targetPort: 80
+        targetPort: 3000
 #Ingresses.
 ingress:
   - name: api
