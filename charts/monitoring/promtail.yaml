@@ -1,0 +1,72 @@
+#This will install promtail in the monitoring namespace.
+
+#Update the helm repository.
+#helm repo add grafana https://grafana.github.io/helm-charts
+#helm repo update
+
+#Install.
+# helm upgrade --install promtail grafana/promtail \
+#   --namespace monitoring \
+#   --set "loki.serviceName=loki" \
+#   --set "loki.servicePort=3100"
+
+#Install with a custom values file.
+#helm install promtail grafana/promtail -f promtail.yaml --namespace monitoring  
+
+#Point to the log database.
+loki:
+  serviceName: loki
+  servicePort: 3100
+
+#create one daemonset per node.
+daemonSet:
+  enabled: true
+
+#Not used if daemonset is enabled.
+#replicas: 1
+
+resources:
+  requests:
+    memory: 64Mi
+    cpu: 64m
+  limits:
+    memory: 256Mi
+    cpu: 250m
+
+#Allow pods to be scheduled on control plane nodes if needed.
+# tolerations:
+#   - key: "node-role.kubernetes.io/control-plane"
+#     operator: "Exists"
+#     effect: "NoSchedule"
+
+config:
+  #Alrady set above.
+  # clients:
+  #   - url: http://loki:3100/loki/api/v1/push
+
+  scrape_configs:
+    - job_name: kubernetes-pods
+
+      kubernetes_sd_configs:
+        - role: pod
+
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_node_name]
+          target_label: node
+
+        - source_labels: [__meta_kubernetes_namespace]
+          target_label: namespace
+
+        - source_labels: [__meta_kubernetes_pod_name]
+          target_label: pod
+
+        - source_labels: [__meta_kubernetes_pod_container_name]
+          target_label: container
+
+        - action: replace
+          replacement: /var/log/pods/*$1/*.log
+          separator: /
+          source_labels:
+            - __meta_kubernetes_pod_uid
+            - __meta_kubernetes_pod_container_name
+          target_label: __path__

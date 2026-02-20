@@ -1,32 +1,72 @@
-#Install loki
-# helm install loki grafana/loki-stack \
+#This will install Loki in the monitoring namespace.
+
+#Update the helm repository.
+#helm repo add grafana https://grafana.github.io/helm-charts
+#helm repo update
+
+#Install.
+# helm install loki grafana/loki \
 #   --namespace monitoring \
-#   --set grafana.enabled=true \
+#   --set grafana.enabled=false \
 #   --set promtail.enabled=true
 #   --set persistence.enabled=true \
 #   --set persistence.size=1Gi
 
-# helm upgrade loki grafana/loki-stack \
-#   --namespace monitoring \
-#   --set persistence.enabled=true \
-#   --set persistence.size=1Gi
+#Install with a custom values file.
+#helm install loki grafana/loki -f loki.yaml --namespace monitoring  
 
-
-#Add loki as a data source.
+#Add loki as a data source in grafana.
 #http://loki:3100
 
-# helm install loki grafana/loki-stack \
-#   --namespace monitoring \
-#   -f loki-values.yaml
+#Distributed mode required a shared storage such as NFS or S3.
+deploymentMode: SingleBinary
+
+singleBinary:
+  replicas: 1 #Set to 1 if singlebinary is used.
 
 loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1 #Set to 1 if singlebinary is used.
+  resources:
+    requests:
+      cpu: 64m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
   persistence:
     enabled: true
-    size: 1Gi
-    storageClassName: "standard"
+    size: 5Gi
+    storageClassName: "local-path"  #Set as nfs if distributed mode is used.
+  storage:
+    type: filesystem
+  schemaConfig:
+    configs:
+      - from: 2024-01-01
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+  limits_config:
+    retention_period: 48h
 
-promtail:
-  enabled: true
+#Not used if singlebinary is used.
+write:
+  replicas: 0
+read:
+  replicas: 0
+backend:
+  replicas: 0
 
-grafana:
-  enabled: true  # optional, installs Grafana integrated with Loki
+#For memory caching if the query load is high.
+memcached:
+  enabled: false
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 64m
+    limits:
+      memory: 4Gi
+      cpu: 250m

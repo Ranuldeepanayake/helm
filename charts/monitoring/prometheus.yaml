@@ -1,25 +1,27 @@
-# Prometheus & Grafana
-# helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-# helm repo add grafana https://grafana.github.io/helm-charts
-# helm repo update
+#This will install Prometheus, Alertmanager, Node Exporter, and Grafana in the monitoring namespace.
 
-#This will install Prometheus, Alertmanager, Node Exporter, and Grafana in the monitoring
+#Update the helm repository.
+#helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#helm repo add grafana https://grafana.github.io/helm-charts
+#helm repo update
 
+#Install.
 # helm install prometheus-stack prometheus-community/kube-prometheus-stack \
 #   --namespace monitoring --create-namespace \
 #   --set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage=1Gi \
 #   --set grafana.persistence.enabled=true \
 #   --set grafana.persistence.size=1Gi
 
-#Deafult credentials.
-# user: admin
-# password: prom-operator
+#Install with a custom values file.
+#helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace -f prometheus.yaml
 
-# helm install prometheus-stack prometheus-community/kube-prometheus-stack \
-#   --namespace monitoring --create-namespace \
-#   -f prometheus-values.yaml
+#Get admin user password if it was not set in the values file and the defaults don't work.
+#kubectl --namespace monitoring get secrets prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
 
-# Prometheus configuration
+#Default credentials. Can be overridden in the values file.
+#user: admin
+#password: prom-operator
+
 prometheus:
   prometheusSpec:
     storageSpec:
@@ -30,17 +32,55 @@ prometheus:
           resources:
             requests:
               storage: 1Gi
+  #If the prometheus UI needs to be exposed via ingress.
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus.mydomain.com
+    path: /
+    pathType: Prefix
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    #If TLS is required.
+    tls: []
+      # - secretName: grafana-tls
+      #   hosts:
+      #     - prometheus.example.com
 
 # Grafana configuration
 grafana:
   persistence:
     enabled: true
     size: 1Gi
-    storageClassName: "standard"
+    storageClassName: "local-path"
+  # initChownData:
+  #   enabled: true
+  # podSecurityContext:
+  #   fsGroup: 472
+  # securityContext:
+  #   runAsUser: 472
+  #   runAsGroup: 472
   adminUser: admin
-  adminPassword: secretpassword123
-  # Optional: enable dashboards provisioning
-  dashboards:
-    default:
-      my-dashboard.json:
-        url: https://raw.githubusercontent.com/grafana/dashboards/master/dashboards/example.json
+  adminPassword: ranul@123
+  #If dashboards needed to be provisioned during the installation.
+  # dashboards:
+  #   default:
+  #     my-dashboard.json:
+  #       url: https://raw.githubusercontent.com/grafana/dashboards/master/dashboards/example.json
+  #If the Grafana UI needs to be exposed via ingress.
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.mydomain.com
+    path: /
+    pathType: Prefix
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    #If TLS is required.
+    tls: []
+      # - secretName: grafana-tls
+      #   hosts:
+      #     - grafana.example.com
+
