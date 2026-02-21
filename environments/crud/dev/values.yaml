@@ -50,7 +50,9 @@ imagePullSecrets: []
 
 terminationGracePeriodSeconds: 30
 podSecurityContext: {}
-nodeSelector: {}
+#Basic node selection rules.
+nodeSelector:
+  node-role.kubernetes.io/worker: ""
 tolerations: []
 affinity: {}
 #Init containers.
