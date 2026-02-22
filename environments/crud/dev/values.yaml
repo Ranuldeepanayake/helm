@@ -23,14 +23,14 @@ autoscaling:
     stabilizationWindowSeconds: 0 #How long to wait before scaling up after utilization has exceeded.
     policies:
       - type: Percent
-        value: 100 #Allow scaling up 100% of current replicas every 15 seconds.
-        periodSeconds: 15
+        value: 50 
+        periodSeconds: 15 #Allow scaling up 50% of current replicas every 15 seconds.
   scaleDown:
-    stabilizationWindowSeconds: 300 #How long to wait before scaling down after utilization has receded.
+    stabilizationWindowSeconds: 120 #How long to wait before scaling down after utilization has receded.
     policies:
       - type: Percent
         value: 50
-        periodSeconds: 60 #Allow scaling down 50% of current replicas every 60 seconds.
+        periodSeconds: 30 #Allow scaling down 50% of current replicas every 60 seconds.
 #Update strategy.
 strategy:
   type: RollingUpdate
@@ -57,13 +57,15 @@ tolerations: []
 #Advanced node selection rules.
 affinity:
   nodeAffinity:
+  #This is a hard rule.
   requiredDuringSchedulingIgnoredDuringExecution:
     nodeSelectorTerms:
       - matchExpressions:
           - key: kubernetes.io/hostname
-            operator: In
+            operator: In  #'In' requires a values while 'Exists' does not.
             values:
               - kubernetes-worker-1
+  #This is soft rule.
   # preferredDuringSchedulingIgnoredDuringExecution:
   #   - weight: 1
   #     preference:
