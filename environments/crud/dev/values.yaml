@@ -58,7 +58,7 @@ tolerations: []
 #Advanced node selection rules.
 affinity:
   #Node affinity rules to run pods on specific nodes.
-  nodeAffinity:
+  nodeAffinity: []
     #This is a hard rule.
     # requiredDuringSchedulingIgnoredDuringExecution:
     #   nodeSelectorTerms:
