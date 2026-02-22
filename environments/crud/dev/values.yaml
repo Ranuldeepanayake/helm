@@ -77,6 +77,7 @@ affinity:
                 operator: In
                 values:
                   - kubernetes-worker-1
+                  - kubernetes-worker-2
   #Pod antiaffinity rules to disperse pods of the same type across nodes.
   podAntiAffinity:
     #This is a hard rule.
