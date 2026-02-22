@@ -15,8 +15,8 @@ autoscaling:
   enabled: true
   labels: {}
   annotations: {}
-  minReplicas: 1
-  maxReplicas: 3
+  minReplicas: 2
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 75 #Is a percentage of container resource requests. 
   targetMemoryUtilizationPercentage: 75
   scaleUp:
@@ -51,10 +51,28 @@ imagePullSecrets: []
 terminationGracePeriodSeconds: 30
 podSecurityContext: {}
 #Basic node selection rules.
-nodeSelector:
-  node-role.kubernetes.io/worker: ""
+nodeSelector: {}
+  # node-role.kubernetes.io/worker: ""
 tolerations: []
-affinity: {}
+#Advanced node selection rules.
+affinity:
+  nodeAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+    nodeSelectorTerms:
+      - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - kubernetes-worker-1
+  # preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 1
+  #     preference:
+  #       matchExpressions:
+  #         - key: zone
+  #           operator: In
+  #           values:
+  #             - zone-a
+
 #Init containers.
 initContainers: []
 # - name: init-logs
