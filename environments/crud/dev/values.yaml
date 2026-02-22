@@ -51,8 +51,8 @@ imagePullSecrets: []
 terminationGracePeriodSeconds: 30
 podSecurityContext: {}
 #Basic node selection rules.
-nodeSelector:
-  kubernetes.io/hostname: kubernetes-worker-1
+nodeSelector: {}
+  # kubernetes.io/hostname: kubernetes-worker-1
   #node-role.kubernetes.io/worker: ""
 tolerations: []
 #Advanced node selection rules.
@@ -65,7 +65,7 @@ affinity:
           - key: kubernetes.io/hostname
             operator: In  #'In' requires a values while 'Exists' does not.
             values:
-              - kubernetes-worker-1
+              - kubernetes-worker-2
   #This is soft rule.
   # preferredDuringSchedulingIgnoredDuringExecution:
   #   - weight: 1
