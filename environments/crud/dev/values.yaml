@@ -95,7 +95,7 @@ affinity:
     preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 100
         preference:
-          - labelSelector:
+          labelSelector:
             matchExpressions:
               - key: app.kubernetes.io/instance
                 operator: In
@@ -105,7 +105,7 @@ affinity:
                 operator: In
                 values:
                   - crud
-            topologyKey: "kubernetes.io/hostname"
+          topologyKey: "kubernetes.io/hostname"
 
 #Init containers.
 initContainers: []
