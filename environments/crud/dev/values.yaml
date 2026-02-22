@@ -51,8 +51,8 @@ imagePullSecrets: []
 terminationGracePeriodSeconds: 30
 podSecurityContext: {}
 #Basic node selection rules.
-nodeSelector: {}
-  # node-role.kubernetes.io/worker: ""
+nodeSelector:
+   node-role.kubernetes.io/worker: ""
 tolerations: []
 #Advanced node selection rules.
 affinity:
@@ -74,6 +74,17 @@ affinity:
   #           operator: In
   #           values:
   #             - zone-a
+  #Pod antiaffinity rules to disperse pods of the same type across nodes.
+  # podAntiAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     - labelSelector:
+  #         matchExpressions:
+  #           - key: app
+  #             operator: In
+  #             values:
+  #               - api
+  #       topologyKey: "kubernetes.io/hostname"
+
 
 #Init containers.
 initContainers: []
