@@ -71,25 +71,40 @@ affinity:
     # preferredDuringSchedulingIgnoredDuringExecution:
     #   - weight: 1
     #     preference:
-    #       matchExpressions:
-    #         - key: zone
-    #           operator: In
-    #           values:
-    #             - zone-a
+    #       nodeSelectorTerm:
+      #       matchExpressions:
+      #         - key: zone
+      #           operator: In
+      #           values:
+      #             - zone-a
   #Pod antiaffinity rules to disperse pods of the same type across nodes.
   podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-            - key: app.kubernetes.io/instance
-              operator: In
-              values:
-                - crud-dev
-            - key: app.kubernetes.io/name
-              operator: In
-              values:
-                - crud
-        topologyKey: "kubernetes.io/hostname"
+    #This is a hard rule.
+    # requiredDuringSchedulingIgnoredDuringExecution:
+    #   - labelSelector:
+    #       matchExpressions:
+    #         - key: app.kubernetes.io/instance
+    #           operator: In
+    #           values:
+    #             - crud-dev
+    #         - key: app.kubernetes.io/name
+    #           operator: In
+    #           values:
+    #             - crud
+    #     topologyKey: "kubernetes.io/hostname"
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                  - crud-dev
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - crud
 
 #Init containers.
 initContainers: []
