@@ -60,25 +60,25 @@ affinity:
   #Node affinity rules to run pods on specific nodes.
   nodeAffinity:
     #This is a hard rule.
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In  #'In' requires a values while 'Exists' does not.
-              values:
-                - kubernetes-worker-1
-                - kubernetes-worker-2
+    # requiredDuringSchedulingIgnoredDuringExecution:
+    #   nodeSelectorTerms:
+    #     - matchExpressions:
+    #         - key: kubernetes.io/hostname
+    #           operator: In  #'In' requires a values while 'Exists' does not.
+    #           values:
+    #             - kubernetes-worker-1
+    #             - kubernetes-worker-2
     #This is soft rule.
-    # preferredDuringSchedulingIgnoredDuringExecution:
-    #   - weight: 100
-    #     preference:
-    #       nodeSelectorTerm:
-    #         matchExpressions:
-    #           - key: kubernetes.io/hostname
-    #             operator: In
-    #             values:
-    #               - kubernetes-worker-1
-    #               - kubernetes-worker-2
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          nodeSelectorTerm:
+            matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - kubernetes-worker-1
+                  - kubernetes-worker-2
   #Pod antiaffinity rules to disperse pods of the same type across nodes.
   podAntiAffinity:
     #This is a hard rule.
