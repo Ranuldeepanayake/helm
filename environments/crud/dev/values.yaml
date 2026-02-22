@@ -105,6 +105,7 @@ affinity:
                 operator: In
                 values:
                   - crud
+          topologyKey: "kubernetes.io/hostname"
 
 #Init containers.
 initContainers: []
