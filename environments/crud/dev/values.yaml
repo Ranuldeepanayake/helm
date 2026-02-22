@@ -92,6 +92,7 @@ affinity:
     #           values:
     #             - crud
     #     topologyKey: "kubernetes.io/hostname"
+    #This is soft rule.
     preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 100
         podAffinityTerm:
