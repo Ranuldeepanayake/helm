@@ -52,7 +52,8 @@ terminationGracePeriodSeconds: 30
 podSecurityContext: {}
 #Basic node selection rules.
 nodeSelector:
-   node-role.kubernetes.io/worker: ""
+  kubernetes.io/hostname: kubernetes-worker-1
+  #node-role.kubernetes.io/worker: ""
 tolerations: []
 #Advanced node selection rules.
 affinity:
