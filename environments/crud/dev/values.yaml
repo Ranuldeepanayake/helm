@@ -60,13 +60,13 @@ affinity:
   #Node affinity rules to run pods on specific nodes.
   nodeAffinity:
     #This is a hard rule.
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In  #'In' requires a values while 'Exists' does not.
-              values:
-                - kubernetes-worker-2
+    # requiredDuringSchedulingIgnoredDuringExecution:
+    #   nodeSelectorTerms:
+    #     - matchExpressions:
+    #         - key: kubernetes.io/hostname
+    #           operator: In  #'In' requires a values while 'Exists' does not.
+    #           values:
+    #             - kubernetes-worker-2
     #This is soft rule.
     # preferredDuringSchedulingIgnoredDuringExecution:
     #   - weight: 1
