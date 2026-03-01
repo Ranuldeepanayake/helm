@@ -23,7 +23,7 @@ autoscaling:
     stabilizationWindowSeconds: 0 #How long to wait before scaling up after utilization has exceeded.
     policies:
       - type: Percent
-        value: 50 
+        value: 50
         periodSeconds: 15 #Allow scaling up 50% of current replicas every 15 seconds.
   scaleDown:
     stabilizationWindowSeconds: 120 #How long to wait before scaling down after utilization has receded.
@@ -52,8 +52,8 @@ terminationGracePeriodSeconds: 30
 podSecurityContext: {}
 #Basic node selection rules.
 nodeSelector: {}
-  # kubernetes.io/hostname: kubernetes-worker-1
-  #node-role.kubernetes.io/worker: ""
+# kubernetes.io/hostname: kubernetes-worker-1
+#node-role.kubernetes.io/worker: ""
 tolerations: []
 #Advanced node selection rules.
 affinity:
@@ -109,7 +109,6 @@ affinity:
                 values:
                   - crud
           topologyKey: "kubernetes.io/hostname"
-
 #Init containers.
 initContainers: []
 # - name: init-logs
@@ -123,7 +122,7 @@ initContainers: []
 containers:
   - name: app
     repository: public.ecr.aws/l4a5c1v5/crud/app
-    tag: 1.0.1-DEVELOP-SNAPSHOT-20260217_184915-COMMITSHA_116c85dc
+    tag: 1.0.1-DEVELOP-SNAPSHOT-20260301_162035-COMMITSHA_e46d5fbd
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
