@@ -1,0 +1,17 @@
+#helm repo add grafana https://grafana.github.io/helm-charts
+#helm repo update
+
+#helm install k6-operator grafana/k6-operator --namespace k6-system --create-namespace
+
+image:
+  repository: ghcr.io/grafana/k6-operator
+  pullPolicy: IfNotPresent
+
+manager:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
