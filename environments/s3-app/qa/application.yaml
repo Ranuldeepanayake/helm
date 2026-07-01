@@ -1,0 +1,30 @@
+#ArgoCD application for the qa environment.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crud-qa #This becomes the release name.
+  namespace: argocd
+spec:
+  project: home-lab
+  source:
+    repoURL: git@github.com:Ranuldeepanayake/helm.git
+    targetRevision: develop
+    path: charts/crud
+    helm:
+      valueFiles:
+        - ../../environments/crud/qa/values.yaml
+        - ../../environments/crud/qa/env.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crud-qa
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+        - ApplyOutOfSyncOnly=false
+        - Validate=false
+        - Replace=false
+        - Force=false
+        - ServerSideApply=false
