@@ -120,8 +120,8 @@ initContainers: []
 
 #Containers.
 containers:
-  - name: app
-    repository: public.ecr.aws/l4a5c1v5/crud/app
+  - name: backend
+    repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com
     tag: 1.0.1-DEVELOP-SNAPSHOT-20260301_162035-COMMITSHA_e46d5fbd
     imagePullPolicy: IfNotPresent
     resources:
