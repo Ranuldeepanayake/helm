@@ -296,7 +296,7 @@ roleBinding:
 cronJob:
   enabled: true
   name: aws-ecr-secret-refresher
-  schedule: "*/2 * * * *"
+  schedule: "*/15 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 2
