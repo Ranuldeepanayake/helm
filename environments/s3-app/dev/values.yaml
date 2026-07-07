@@ -121,7 +121,7 @@ initContainers: []
 #Containers.
 containers:
   - name: backend
-    repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com
+    repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/backend
     tag: 1.1.0-DEVELOP-SNAPSHOT-20260701_090817-COMMITSHA_653c00a0
     imagePullPolicy: IfNotPresent
     resources:
