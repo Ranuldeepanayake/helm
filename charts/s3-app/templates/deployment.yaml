@@ -150,14 +150,13 @@ spec:
           - configMapRef:
               name: {{ .name }}-{{ include "s3-app.fullname" $ }}
               optional: true
-
-            {{- with .envFromSecrets }}
-            {{- range . }}
-              - secretRef:
-                  name: {{ . }}
-                  optional: true
-            {{- end }}
-            {{- end }}
+          {{- with .envFromSecrets }}
+          {{- range . }}
+          - secretRef:
+              name: {{ . }}
+              optional: true
+          {{- end }}
+          {{- end }}
 
         {{- with .command }}
         command:
