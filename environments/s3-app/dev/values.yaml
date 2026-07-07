@@ -257,7 +257,7 @@ serviceAccount:
   annotations: {}
   #Prevents mounting a kubernetes API token at /var/run/secrets/kubernetes.io/serviceaccount/token in the container.
   #Therefore, even if RBAC permissions are accidentally granted, the application will not be able to access the Kubernetes API.
-  automountServiceAccountToken: false
+  automountServiceAccountToken: true
 # - name: worker-sa
 #   annotations:
 #     eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/my-api-role
