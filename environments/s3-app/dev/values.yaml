@@ -58,7 +58,7 @@ tolerations: []
 #Advanced node selection rules.
 affinity:
   #Node affinity rules to run pods on specific nodes.
-  nodeAffinity: []
+  nodeAffinity: {}
     #This is a hard rule.
     # requiredDuringSchedulingIgnoredDuringExecution:
     #   nodeSelectorTerms:
@@ -80,7 +80,7 @@ affinity:
     #               - kubernetes-worker-1
     #               - kubernetes-worker-2
   #Pod antiaffinity rules to disperse pods of the same type across nodes.
-  podAntiAffinity: []
+  podAntiAffinity: {}
     #This is a hard rule.
     # requiredDuringSchedulingIgnoredDuringExecution:
     #   - labelSelector:
