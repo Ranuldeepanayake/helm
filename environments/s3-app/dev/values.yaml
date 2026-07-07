@@ -47,7 +47,6 @@ podAnnotations: {}
 #Image pull secrets.
 imagePullSecrets:
   - name: aws-ecr
-
 terminationGracePeriodSeconds: 30
 podSecurityContext: {}
 #Basic node selection rules.
@@ -59,56 +58,56 @@ tolerations: []
 affinity:
   #Node affinity rules to run pods on specific nodes.
   nodeAffinity: {}
-    #This is a hard rule.
-    # requiredDuringSchedulingIgnoredDuringExecution:
-    #   nodeSelectorTerms:
-    #     - matchExpressions:
-    #         - key: kubernetes.io/hostname
-    #           operator: In  #'In' requires a values while 'Exists' does not.
-    #           values:
-    #             - kubernetes-worker-1
-    #             - kubernetes-worker-2
-    #This is soft rule.
-    # preferredDuringSchedulingIgnoredDuringExecution:
-    #   - weight: 100
-    #     preference:
-    #       nodeSelectorTerm:
-    #         matchExpressions:
-    #           - key: kubernetes.io/hostname
-    #             operator: In
-    #             values:
-    #               - kubernetes-worker-1
-    #               - kubernetes-worker-2
+  #This is a hard rule.
+  # requiredDuringSchedulingIgnoredDuringExecution:
+  #   nodeSelectorTerms:
+  #     - matchExpressions:
+  #         - key: kubernetes.io/hostname
+  #           operator: In  #'In' requires a values while 'Exists' does not.
+  #           values:
+  #             - kubernetes-worker-1
+  #             - kubernetes-worker-2
+  #This is soft rule.
+  # preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 100
+  #     preference:
+  #       nodeSelectorTerm:
+  #         matchExpressions:
+  #           - key: kubernetes.io/hostname
+  #             operator: In
+  #             values:
+  #               - kubernetes-worker-1
+  #               - kubernetes-worker-2
   #Pod antiaffinity rules to disperse pods of the same type across nodes.
   podAntiAffinity: {}
-    #This is a hard rule.
-    # requiredDuringSchedulingIgnoredDuringExecution:
-    #   - labelSelector:
-    #       matchExpressions:
-    #         - key: app.kubernetes.io/instance
-    #           operator: In
-    #           values:
-    #             - crud-dev
-    #         - key: app.kubernetes.io/name
-    #           operator: In
-    #           values:
-    #             - crud
-    #     topologyKey: "kubernetes.io/hostname"
-    #This is soft rule.
-    # preferredDuringSchedulingIgnoredDuringExecution:
-    #   - weight: 100
-    #     podAffinityTerm:
-    #       labelSelector:
-    #         matchExpressions:
-    #           - key: app.kubernetes.io/instance
-    #             operator: In
-    #             values:
-    #               - crud-dev
-    #           - key: app.kubernetes.io/name
-    #             operator: In
-    #             values:
-    #               - crud
-    #       topologyKey: "kubernetes.io/hostname"
+  #This is a hard rule.
+  # requiredDuringSchedulingIgnoredDuringExecution:
+  #   - labelSelector:
+  #       matchExpressions:
+  #         - key: app.kubernetes.io/instance
+  #           operator: In
+  #           values:
+  #             - crud-dev
+  #         - key: app.kubernetes.io/name
+  #           operator: In
+  #           values:
+  #             - crud
+  #     topologyKey: "kubernetes.io/hostname"
+  #This is soft rule.
+  # preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 100
+  #     podAffinityTerm:
+  #       labelSelector:
+  #         matchExpressions:
+  #           - key: app.kubernetes.io/instance
+  #             operator: In
+  #             values:
+  #               - crud-dev
+  #           - key: app.kubernetes.io/name
+  #             operator: In
+  #             values:
+  #               - crud
+  #       topologyKey: "kubernetes.io/hostname"
 #Init containers.
 initContainers: []
 # - name: init-logs
@@ -122,7 +121,7 @@ initContainers: []
 containers:
   - name: backend
     repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/backend
-    tag: 1.1.0-DEVELOP-SNAPSHOT-20260701_090817-COMMITSHA_653c00a0
+    tag: 1.1.0-DEVELOP-SNAPSHOT-20260707_134438-COMMITSHA_6383474a
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
@@ -136,9 +135,9 @@ containers:
         containerPort: 3100
         protocol: TCP
     volumeMounts: []
-      # - name: vault-token-app
-      #   mountPath: "/etc/secrets"
-      #   readOnly: true
+    # - name: vault-token-app
+    #   mountPath: "/etc/secrets"
+    #   readOnly: true
     # - name: logs-app
     #   mountPath: "/var/log/nginx"
     #   readOnly: false
@@ -182,10 +181,10 @@ containers:
     #   - "while true; do curl http://localhost; done"
 #Volumes.
 volumes: []
-  # - name: vault-token-app
-  #   secret:
-  #     secretName: vault-token-app-secret
-  #     optional: false
+# - name: vault-token-app
+#   secret:
+#     secretName: vault-token-app-secret
+#     optional: false
 # - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
 #   persistentVolumeClaim:
 #     claimName: logs-app-crud
@@ -269,15 +268,15 @@ role:
   labels: {}
   annotations: {}
   rules:
-  - apiGroups: [""]
-    resources:
-      - secrets
-    verbs:
-      - get
-      - create
-      - delete
-      - update
-      - patch
+    - apiGroups: [""]
+      resources:
+        - secrets
+      verbs:
+        - get
+        - create
+        - delete
+        - update
+        - patch
 #Role binding.
 roleBinding:
   create: true
@@ -291,7 +290,6 @@ roleBinding:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
     name: rl
-
 #Cron job.
 cronJob:
   enabled: true
