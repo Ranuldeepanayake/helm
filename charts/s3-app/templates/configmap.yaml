@@ -5,7 +5,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .name }}-{{ include "crud.fullname" $ }}
+  name: {{ .name }}-{{ include "s3-app.fullname" $ }}
 data:
 {{- $containerEnv := index $.Values.env .name }}
 {{- if $containerEnv }}

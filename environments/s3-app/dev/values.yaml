@@ -173,6 +173,8 @@ containers:
     env: []
     # - name: ENV_VAR
     #   value: "value"
+    envFromSecrets:
+      - app-credentials
     command: []
     #   - "/bin/sh"
     #   - "-c"
@@ -232,7 +234,7 @@ ingress:
           - path: /
             pathType: Prefix
             service:
-              name: api
+              name: service
               port:
                 number: 80
       - host: dev.api.s3-app.com
@@ -240,7 +242,7 @@ ingress:
           - path: /
             pathType: Prefix
             service:
-              name: api
+              name: service
               port:
                 number: 8080
     tls: []
@@ -289,3 +291,18 @@ roleBinding:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
     name: s3-app
+
+#Cron job.
+cronJob:
+  enabled: true
+  name: aws-ecr-secret-refresher
+  schedule: "*/2 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  restartPolicy: OnFailure
+  secretName: aws-ecr-credentials #This secret would be created manually in the same namespace.
+  image:
+    repository: amazon/aws-cli
+    tag: latest
+    pullPolicy: IfNotPresent

@@ -5,9 +5,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $ing.name }}-{{ include "crud.fullname" $root }}
+  name: {{ $ing.name }}-{{ include "s3-app.fullname" $root }}
   labels:
-  {{- include "crud.labels"  $root | nindent 4 }}
+  {{- include "s3-app.labels"  $root | nindent 4 }}
   {{- with  $root.Values.commonLabels }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -42,7 +42,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ .service.name }}-{{ include "crud.fullname" $root }}
+                name: {{ .service.name }}-{{ include "s3-app.fullname" $root }}
                 port:
                   number: {{ .service.port.number }}
           {{- end }}

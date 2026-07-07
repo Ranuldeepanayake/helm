@@ -1,0 +1,59 @@
+{{- if .Values.cronJob.enabled }}
+# This CronJob takes around 40 seconds to complete.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.cronJob.name }}-{{ include "s3-app.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: {{ .Values.cronJob.schedule | quote }}
+  concurrencyPolicy: {{ .Values.cronJob.concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ .Values.cronJob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronJob.failedJobsHistoryLimit }}
+
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ .Values.serviceAccount.name }}-{{ include "s3-app.fullname" . }}
+          restartPolicy: {{ .Values.cronJob.restartPolicy }}
+
+          containers:
+            - name: refresh
+              image: {{ .Values.cronJob.image.repository }}:{{ .Values.cronJob.image.tag }}
+              imagePullPolicy: {{ .Values.cronJob.image.pullPolicy }}
+
+              envFrom:
+                - secretRef:
+                    name: {{ .Values.cronJob.secretName }}
+
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+
+                  # Check that all required environment variables are set.
+                  : "${AWS_ACCOUNT_ID:?AWS_ACCOUNT_ID is required}"
+                  : "${AWS_REGION:?AWS_REGION is required}"
+                  : "${AWS_ECR_SECRET_NAME:?AWS_ECR_SECRET_NAME is required}"
+                  : "${SECRET_NAMESPACE:?SECRET_NAMESPACE is required}"
+
+                  # Install kubectl.
+                  KUBECTL_VERSION="$(curl -L -s https://dl.k8s.io/release/stable.txt)"
+                  curl -fsSL -o /usr/local/bin/kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+                  chmod +x /usr/local/bin/kubectl
+
+                  kubectl version --client
+
+                  PASSWORD=$(aws ecr get-login-password --region "${AWS_REGION}")
+
+                  # Create or update the Kubernetes secret with the ECR credentials.
+                  kubectl create secret docker-registry "${AWS_ECR_SECRET_NAME}" \
+                    --docker-server="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com" \
+                    --docker-username=AWS \
+                    --docker-password="${PASSWORD}" \
+                    --dry-run=client \
+                    --namespace="${SECRET_NAMESPACE}" \
+                    -o yaml | kubectl apply -f -
+{{- end }}
