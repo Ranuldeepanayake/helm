@@ -1,0 +1,27 @@
+#Binds a role to a serviceaccount.
+{{- if .Values.roleBinding.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.roleBinding.name }}-{{ include "s3-app.fullname" . }}
+  labels:
+  {{- include "s3-app.labels" . | nindent 4 }}
+  {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.roleBinding.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.roleBinding.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccount.name }}-{{ include "s3-app.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ .Values.role.name }}-{{ include "s3-app.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

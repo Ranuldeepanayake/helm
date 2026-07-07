@@ -1,0 +1,23 @@
+#Defines permissions for a serviceaccount.
+{{- if .Values.role.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Values.role.name }}-{{ include "s3-app.fullname" . }}
+  labels:
+  {{- include "s3-app.labels" . | nindent 4 }}
+  {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.role.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.role.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+rules:
+{{- with .Values.role.rules }}
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end }}

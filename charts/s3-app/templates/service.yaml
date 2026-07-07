@@ -1,0 +1,39 @@
+#Routes traffic to pods and containers.
+{{- $root := . }}
+
+{{- range .Values.service }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}-{{ include "s3-app.fullname" $root }}
+  labels:
+  {{- include "s3-app.labels" $root | nindent 4 }}
+  {{- with $root.Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+spec:
+  type: {{ .type | default "ClusterIP" }}
+
+  #Mandatory to target the correct pods.
+  selector:
+    {{- include "s3-app.selectorLabels" $root | nindent 4 }}
+    
+  ports:
+    {{- range .ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      {{- if .nodePort }}
+      nodePort: {{ .nodePort }}
+      {{- end }}
+    {{- end }}
+---
+{{- end }}

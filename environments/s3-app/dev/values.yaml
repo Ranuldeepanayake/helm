@@ -46,7 +46,7 @@ commonLabels:
 podAnnotations: {}
 #Image pull secrets.
 imagePullSecrets: []
-#  - name: aws-ecr
+  - name: aws-ecr
 
 terminationGracePeriodSeconds: 30
 podSecurityContext: {}
@@ -58,7 +58,7 @@ tolerations: []
 #Advanced node selection rules.
 affinity:
   #Node affinity rules to run pods on specific nodes.
-  nodeAffinity:
+  nodeAffinity: []
     #This is a hard rule.
     # requiredDuringSchedulingIgnoredDuringExecution:
     #   nodeSelectorTerms:
@@ -69,18 +69,18 @@ affinity:
     #             - kubernetes-worker-1
     #             - kubernetes-worker-2
     #This is soft rule.
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        preference:
-          nodeSelectorTerm:
-            matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: In
-                values:
-                  - kubernetes-worker-1
-                  - kubernetes-worker-2
+    # preferredDuringSchedulingIgnoredDuringExecution:
+    #   - weight: 100
+    #     preference:
+    #       nodeSelectorTerm:
+    #         matchExpressions:
+    #           - key: kubernetes.io/hostname
+    #             operator: In
+    #             values:
+    #               - kubernetes-worker-1
+    #               - kubernetes-worker-2
   #Pod antiaffinity rules to disperse pods of the same type across nodes.
-  podAntiAffinity:
+  podAntiAffinity: []
     #This is a hard rule.
     # requiredDuringSchedulingIgnoredDuringExecution:
     #   - labelSelector:
@@ -95,20 +95,20 @@ affinity:
     #             - crud
     #     topologyKey: "kubernetes.io/hostname"
     #This is soft rule.
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-              - key: app.kubernetes.io/instance
-                operator: In
-                values:
-                  - crud-dev
-              - key: app.kubernetes.io/name
-                operator: In
-                values:
-                  - crud
-          topologyKey: "kubernetes.io/hostname"
+    # preferredDuringSchedulingIgnoredDuringExecution:
+    #   - weight: 100
+    #     podAffinityTerm:
+    #       labelSelector:
+    #         matchExpressions:
+    #           - key: app.kubernetes.io/instance
+    #             operator: In
+    #             values:
+    #               - crud-dev
+    #           - key: app.kubernetes.io/name
+    #             operator: In
+    #             values:
+    #               - crud
+    #       topologyKey: "kubernetes.io/hostname"
 #Init containers.
 initContainers: []
 # - name: init-logs
@@ -133,12 +133,12 @@ containers:
         memory: "256Mi"
     ports:
       - name: http
-        containerPort: 3000
+        containerPort: 3100
         protocol: TCP
-    volumeMounts:
-      - name: vault-token-app
-        mountPath: "/etc/secrets"
-        readOnly: true
+    volumeMounts: []
+      # - name: vault-token-app
+      #   mountPath: "/etc/secrets"
+      #   readOnly: true
     # - name: logs-app
     #   mountPath: "/var/log/nginx"
     #   readOnly: false
@@ -179,11 +179,11 @@ containers:
     args: []
     #   - "while true; do curl http://localhost; done"
 #Volumes.
-volumes:
-  - name: vault-token-app
-    secret:
-      secretName: vault-token-app-secret
-      optional: false
+volumes: []
+  # - name: vault-token-app
+  #   secret:
+  #     secretName: vault-token-app-secret
+  #     optional: false
 # - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
 #   persistentVolumeClaim:
 #     claimName: logs-app-crud
@@ -203,14 +203,17 @@ pvc:
 env: {}
 #Services.
 service:
-  - name: api
+  - name: service
     type: ClusterIP
     labels: {}
     annotations: {}
     ports:
-      - name: api
+      - name: web
         port: 80
-        targetPort: 3000
+        targetPort: 3300
+      - name: api
+        port: 8080
+        targetPort: 3100
 #Ingresses.
 ingress:
   - name: api
@@ -224,7 +227,7 @@ ingress:
       #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
     hosts:
-      - host: dev.crud.mydomain.com
+      - host: dev.s3-app.com
         paths:
           - path: /
             pathType: Prefix
@@ -232,6 +235,14 @@ ingress:
               name: api
               port:
                 number: 80
+      - host: dev.api.s3-app.com
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              name: api
+              port:
+                number: 8080
     tls: []
     # - hosts:
     #     - app.example.com
@@ -239,10 +250,10 @@ ingress:
 #Service accounts.
 serviceAccount:
   create: true
-  name: crud
+  name: s3-app
   labels: {}
   annotations: {}
-  #Prevents mounting a kubenertes token at /var/run/secrets/kubernetes.io/serviceaccount/token in the container.
+  #Prevents mounting a kubernetes API token at /var/run/secrets/kubernetes.io/serviceaccount/token in the container.
   #Therefore, even if RBAC permissions are accidentally granted, the application will not be able to access the Kubernetes API.
   automountServiceAccountToken: false
 # - name: worker-sa
@@ -252,16 +263,29 @@ serviceAccount:
 #Role.
 role:
   create: true
-  name: crud
+  name: s3-app
   labels: {}
   annotations: {}
-  rules: []
-  # - apiGroups: [""]
-  #   resources: ["configmaps"]
-  #   verbs: ["get", "list", "watch"]
+  rules:
+  - apiGroups: [""]
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create
+      - delete
+      - update
+      - patch
 #Role binding.
 roleBinding:
   create: true
-  name: crud
+  name: s3-app
   labels: {}
   annotations: {}
+  subjects:
+    - kind: ServiceAccount
+      name: s3-app
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: s3-app

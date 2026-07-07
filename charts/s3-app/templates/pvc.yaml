@@ -1,0 +1,25 @@
+#Persistent volume clanims will be created only if creation is set to true. Even if creation is set to true,
+#if an existing PVC name is provided, the PVC will not be re-created. The volume will instead use the previously created PVC
+#as long as the name matches.
+{{- if .Values.pvc.create }}
+{{- range .Values.pvc.list }}
+{{- if not .existingClaim }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .name }}
+spec:
+  accessModes:
+{{- range .accessModes }}
+    - {{ . }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .size }}
+    {{- if .storageClassName }}
+      storageClassName: {{ .storageClassName }}
+    {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

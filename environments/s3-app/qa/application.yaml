@@ -2,21 +2,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: crud-qa #This becomes the release name.
+  name: s3-app-qa #This becomes the release name.
   namespace: argocd
 spec:
-  project: home-lab
+  project: s3-app
   source:
     repoURL: git@github.com:Ranuldeepanayake/helm.git
     targetRevision: develop
-    path: charts/crud
+    path: charts/s3-app
     helm:
       valueFiles:
-        - ../../environments/crud/qa/values.yaml
-        - ../../environments/crud/qa/env.yaml
+        - ../../environments/s3-app/qa/values.yaml
+        - ../../environments/s3-app/qa/env.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: crud-qa
+    namespace: s3-app-qa
   syncPolicy:
     automated:
       prune: true
