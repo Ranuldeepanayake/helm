@@ -45,7 +45,7 @@ commonLabels:
 #They are for informational purposes.
 podAnnotations: {}
 #Image pull secrets.
-imagePullSecrets: []
+imagePullSecrets:
   - name: aws-ecr
 
 terminationGracePeriodSeconds: 30
@@ -174,7 +174,7 @@ containers:
     # - name: ENV_VAR
     #   value: "value"
     envFromSecrets:
-      - app-credentials
+      - app-credentials #This secret would be created manually in the same namespace.
     command: []
     #   - "/bin/sh"
     #   - "-c"
