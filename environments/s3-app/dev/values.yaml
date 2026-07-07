@@ -205,7 +205,7 @@ pvc:
 env: {}
 #Services.
 service:
-  - name: service
+  - name: svc
     type: ClusterIP
     labels: {}
     annotations: {}
@@ -218,7 +218,7 @@ service:
         targetPort: 3100
 #Ingresses.
 ingress:
-  - name: api
+  - name: ing
     enabled: true
     ingressClassName: nginx
     labels: {}
@@ -234,7 +234,7 @@ ingress:
           - path: /
             pathType: Prefix
             service:
-              name: service
+              name: svc
               port:
                 number: 80
       - host: dev.api.s3-app.com
@@ -242,7 +242,7 @@ ingress:
           - path: /
             pathType: Prefix
             service:
-              name: service
+              name: svc
               port:
                 number: 8080
     tls: []
@@ -252,7 +252,7 @@ ingress:
 #Service accounts.
 serviceAccount:
   create: true
-  name: s3-app
+  name: sa
   labels: {}
   annotations: {}
   #Prevents mounting a kubernetes API token at /var/run/secrets/kubernetes.io/serviceaccount/token in the container.
@@ -265,7 +265,7 @@ serviceAccount:
 #Role.
 role:
   create: true
-  name: s3-app
+  name: rl
   labels: {}
   annotations: {}
   rules:
@@ -281,16 +281,16 @@ role:
 #Role binding.
 roleBinding:
   create: true
-  name: s3-app
+  name: rb
   labels: {}
   annotations: {}
   subjects:
     - kind: ServiceAccount
-      name: s3-app
+      name: sa
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
-    name: s3-app
+    name: rl
 
 #Cron job.
 cronJob:
