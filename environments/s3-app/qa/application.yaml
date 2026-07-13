@@ -5,15 +5,26 @@ metadata:
   name: s3-app-qa #This becomes the release name.
   namespace: argocd
 spec:
-  project: s3-app
+  project: home-lab
   source:
     repoURL: git@github.com:Ranuldeepanayake/helm.git
-    targetRevision: develop
+    targetRevision: qaelop
     path: charts/s3-app
     helm:
       valueFiles:
         - ../../environments/s3-app/qa/values.yaml
-        - ../../environments/s3-app/qa/env.yaml
+        - ../../environments/s3-app/qa/backend-env.yaml
+    #Ignore the orphaned resource warning for manually created resources. 
+    #This does not work here. It has to be set in the the argocd project config.
+    orphanedResources:
+      warn: true
+      ignore:
+        - kind: Secret
+          name: app-credentials
+        - kind: Secret
+          name: aws-ecr
+        - kind: Secret
+          name: aws-ecr-credentials
   destination:
     server: https://kubernetes.default.svc
     namespace: s3-app-qa

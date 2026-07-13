@@ -15,22 +15,22 @@ autoscaling:
   enabled: true
   labels: {}
   annotations: {}
-  minReplicas: 1
-  maxReplicas: 3
+  minReplicas: 2
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 75 #Is a percentage of container resource requests. 
   targetMemoryUtilizationPercentage: 75
   scaleUp:
     stabilizationWindowSeconds: 0 #How long to wait before scaling up after utilization has exceeded.
     policies:
       - type: Percent
-        value: 100 #Allow scaling up 100% of current replicas every 15 seconds.
-        periodSeconds: 15
+        value: 50
+        periodSeconds: 15 #Allow scaling up 50% of current replicas every 15 seconds.
   scaleDown:
-    stabilizationWindowSeconds: 300 #How long to wait before scaling down after utilization has receded.
+    stabilizationWindowSeconds: 120 #How long to wait before scaling down after utilization has receded.
     policies:
       - type: Percent
         value: 50
-        periodSeconds: 60 #Allow scaling down 50% of current replicas every 60 seconds.
+        periodSeconds: 30 #Allow scaling down 50% of current replicas every 60 seconds.
 #Update strategy.
 strategy:
   type: RollingUpdate
@@ -45,14 +45,70 @@ commonLabels:
 #They are for informational purposes.
 podAnnotations: {}
 #Image pull secrets.
-imagePullSecrets: []
-#  - name: aws-ecr
-
+imagePullSecrets:
+  - name: aws-ecr
 terminationGracePeriodSeconds: 30
+#Security context for all containers in a pod except for initcontainers. This can be overriden on a container level.
 podSecurityContext: {}
+#Basic node selection rules.
 nodeSelector: {}
+# kubernetes.io/hostname: kubernetes-worker-1
+#node-role.kubernetes.io/worker: ""
 tolerations: []
-affinity: {}
+#Advanced node selection rules.
+affinity:
+  #Node affinity rules to run pods on specific nodes.
+  nodeAffinity: {}
+  #This is a hard rule.
+  # requiredDuringSchedulingIgnoredDuringExecution:
+  #   nodeSelectorTerms:
+  #     - matchExpressions:
+  #         - key: kubernetes.io/hostname
+  #           operator: In  #'In' requires a values while 'Exists' does not.
+  #           values:
+  #             - kubernetes-worker-1
+  #             - kubernetes-worker-2
+  #This is soft rule.
+  # preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 100
+  #     preference:
+  #       nodeSelectorTerm:
+  #         matchExpressions:
+  #           - key: kubernetes.io/hostname
+  #             operator: In
+  #             values:
+  #               - kubernetes-worker-1
+  #               - kubernetes-worker-2
+  #Pod antiaffinity rules to disperse pods of the same type across nodes.
+  podAntiAffinity: {}
+  #This is a hard rule.
+  # requiredDuringSchedulingIgnoredDuringExecution:
+  #   - labelSelector:
+  #       matchExpressions:
+  #         - key: app.kubernetes.io/instance
+  #           operator: In
+  #           values:
+  #             - crud-dev
+  #         - key: app.kubernetes.io/name
+  #           operator: In
+  #           values:
+  #             - crud
+  #     topologyKey: "kubernetes.io/hostname"
+  #This is soft rule.
+  # preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 100
+  #     podAffinityTerm:
+  #       labelSelector:
+  #         matchExpressions:
+  #           - key: app.kubernetes.io/instance
+  #             operator: In
+  #             values:
+  #               - crud-dev
+  #           - key: app.kubernetes.io/name
+  #             operator: In
+  #             values:
+  #               - crud
+  #       topologyKey: "kubernetes.io/hostname"
 #Init containers.
 initContainers: []
 # - name: init-logs
@@ -64,25 +120,25 @@ initContainers: []
 
 #Containers.
 containers:
-  - name: app
-    repository: public.ecr.aws/l4a5c1v5/crud/app
-    tag: 1.0.0-rc.3-RELEASE-SNAPSHOT-20260215_202649-COMMITSHA_1f828a72
+  - name: backend
+    repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/backend
+    tag: 1.1.0-DEVELOP-SNAPSHOT-20260710_141529-COMMITSHA_05cf09df
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
         cpu: "32m"
-        memory: "64Mi"
+        memory: "128Mi"
       limits:
         cpu: "125m"
         memory: "256Mi"
     ports:
       - name: http
-        containerPort: 3000
+        containerPort: 3100
         protocol: TCP
-    volumeMounts:
-      - name: vault-token-app
-        mountPath: "/etc/secrets"
-        readOnly: true
+    volumeMounts: []
+    # - name: vault-token-app
+    #   mountPath: "/etc/secrets"
+    #   readOnly: true
     # - name: logs-app
     #   mountPath: "/var/log/nginx"
     #   readOnly: false
@@ -94,14 +150,14 @@ containers:
       periodSeconds: 15 # Check every 15s
       timeoutSeconds: 5 # Give the request 5s to respond
       failureThreshold: 3 # Restart after 3 consecutive failures
-      successThreshold: 1 # Consider healthy after 1 success
+      successThreshold: 2 # Consider healthy after 1 success
     readinessProbe:
       httpGet:
-        path: /
+        path: /api/health/live
         port: http
       initialDelaySeconds: 15
       periodSeconds: 5
-      timeoutSeconds: 2
+      timeoutSeconds: 3
       failureThreshold: 3
       successThreshold: 2
     securityContext: []
@@ -117,17 +173,19 @@ containers:
     env: []
     # - name: ENV_VAR
     #   value: "value"
+    envFromSecrets:
+      - app-credentials #This secret would be created manually in the same namespace.
     command: []
     #   - "/bin/sh"
     #   - "-c"
     args: []
     #   - "while true; do curl http://localhost; done"
 #Volumes.
-volumes:
-  - name: vault-token-app
-    secret:
-      secretName: vault-token-app-secret
-      optional: false
+volumes: []
+# - name: vault-token-app
+#   secret:
+#     secretName: vault-token-app-secret
+#     optional: false
 # - name: logs-app             #This name will be used in the volumeMounts and the PVC claimName.
 #   persistentVolumeClaim:
 #     claimName: logs-app-crud
@@ -147,17 +205,20 @@ pvc:
 env: {}
 #Services.
 service:
-  - name: api
+  - name: svc
     type: ClusterIP
     labels: {}
     annotations: {}
     ports:
-      - name: api
+      - name: web
         port: 80
-        targetPort: 3000
+        targetPort: 3300
+      - name: api
+        port: 8080
+        targetPort: 3100
 #Ingresses.
 ingress:
-  - name: api
+  - name: ing
     enabled: true
     ingressClassName: nginx
     labels: {}
@@ -168,14 +229,22 @@ ingress:
       #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
     hosts:
-      - host: qa.crud.mydomain.com
+      - host: dev.s3-app.com
         paths:
           - path: /
             pathType: Prefix
             service:
-              name: api
+              name: svc
               port:
                 number: 80
+      - host: dev.api.s3-app.com
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              name: svc
+              port:
+                number: 8080
     tls: []
     # - hosts:
     #     - app.example.com
@@ -183,12 +252,12 @@ ingress:
 #Service accounts.
 serviceAccount:
   create: true
-  name: crud
+  name: sa
   labels: {}
   annotations: {}
-  #Prevents mounting a kubenertes token at /var/run/secrets/kubernetes.io/serviceaccount/token in the container.
+  #Prevents mounting a kubernetes API token at /var/run/secrets/kubernetes.io/serviceaccount/token in the container.
   #Therefore, even if RBAC permissions are accidentally granted, the application will not be able to access the Kubernetes API.
-  automountServiceAccountToken: false
+  automountServiceAccountToken: true
 # - name: worker-sa
 #   annotations:
 #     eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/my-api-role
@@ -196,16 +265,43 @@ serviceAccount:
 #Role.
 role:
   create: true
-  name: crud
+  name: rl
   labels: {}
   annotations: {}
-  rules: []
-  # - apiGroups: [""]
-  #   resources: ["configmaps"]
-  #   verbs: ["get", "list", "watch"]
+  rules:
+    - apiGroups: [""]
+      resources:
+        - secrets
+      verbs:
+        - get
+        - create
+        - delete
+        - update
+        - patch
 #Role binding.
 roleBinding:
   create: true
-  name: crud
+  name: rb
   labels: {}
   annotations: {}
+  subjects:
+    - kind: ServiceAccount
+      name: sa
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rl
+#Cron job.
+cronJob:
+  enabled: true
+  name: aws-ecr-secret-refresher
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  restartPolicy: OnFailure
+  secretName: aws-ecr-credentials #This secret would be created manually in the same namespace.
+  image:
+    repository: amazon/aws-cli
+    tag: latest
+    pullPolicy: IfNotPresent
