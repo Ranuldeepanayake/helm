@@ -8,7 +8,7 @@ spec:
   project: home-lab
   source:
     repoURL: git@github.com:Ranuldeepanayake/helm.git
-    targetRevision: qaelop
+    targetRevision: develop
     path: charts/s3-app
     helm:
       valueFiles:
