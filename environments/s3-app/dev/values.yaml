@@ -150,14 +150,14 @@ containers:
       periodSeconds: 15 # Check every 15s
       timeoutSeconds: 5 # Give the request 5s to respond
       failureThreshold: 3 # Restart after 3 consecutive failures
-      successThreshold: 1 # Consider healthy after 1 success
+      successThreshold: 2 # Consider healthy after 1 success
     readinessProbe:
       httpGet:
-        path: /
+        path: /api/health/live
         port: http
       initialDelaySeconds: 15
       periodSeconds: 5
-      timeoutSeconds: 2
+      timeoutSeconds: 3
       failureThreshold: 3
       successThreshold: 2
     securityContext: []
