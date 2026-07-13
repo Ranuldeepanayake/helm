@@ -159,7 +159,7 @@ containers:
       periodSeconds: 5
       timeoutSeconds: 3
       failureThreshold: 3
-      successThreshold: 2
+      successThreshold: 1
     securityContext: []
     # runAsUser: 1000
     # runAsGroup: 3000
