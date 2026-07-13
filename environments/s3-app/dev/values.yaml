@@ -48,6 +48,7 @@ podAnnotations: {}
 imagePullSecrets:
   - name: aws-ecr
 terminationGracePeriodSeconds: 30
+#Security context for all containers in a pod except for initcontainers. This can be overriden on a container level.
 podSecurityContext: {}
 #Basic node selection rules.
 nodeSelector: {}

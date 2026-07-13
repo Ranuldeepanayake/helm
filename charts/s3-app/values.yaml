@@ -85,7 +85,7 @@ containers:
       successThreshold: 1        # Consider healthy after 1 success
     readinessProbe:
       httpGet:
-        path: /
+        path: /api/health/live
         port: http
       initialDelaySeconds: 15    
       periodSeconds: 5           

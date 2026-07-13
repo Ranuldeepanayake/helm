@@ -40,7 +40,7 @@ resources:
 #     effect: "NoSchedule"
 
 config:
-  #Alrady set above.
+  #Already set above.
   # clients:
   #   - url: http://loki:3100/loki/api/v1/push
 

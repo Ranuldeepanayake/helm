@@ -54,8 +54,8 @@ grafana:
     enabled: true
     size: 1Gi
     storageClassName: "local-path"
-  # initChownData:
-  #   enabled: true
+  initChownData:
+    enabled: false      #Please set to true when installing grafana for the first time. Set to false when upgrading grafana.
   # podSecurityContext:
   #   fsGroup: 472
   # securityContext:
