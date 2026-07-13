@@ -229,7 +229,7 @@ ingress:
       #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
     hosts:
-      - host: dev.s3-app.com
+      - host: qa.s3-app.com
         paths:
           - path: /
             pathType: Prefix
@@ -237,7 +237,7 @@ ingress:
               name: svc
               port:
                 number: 80
-      - host: dev.api.s3-app.com
+      - host: qa.api.s3-app.com
         paths:
           - path: /
             pathType: Prefix
