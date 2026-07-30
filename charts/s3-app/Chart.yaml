@@ -13,3 +13,26 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "0.1.0"
+
+# The following Kubernetes secrets must be created.
+
+# Secret to support generating the AWS ECR token through a Kubernetes cron job.
+# kubectl create secret generic aws-ecr-credentials \
+#   --namespace= \
+#   --from-literal=AWS_ACCESS_KEY_ID= \
+#   --from-literal=AWS_SECRET_ACCESS_KEY= \
+#   --from-literal=AWS_REGION= \
+#   --from-literal=AWS_ACCOUNT_ID= \
+#   --from-literal=AWS_ECR_SECRET_NAME= \
+#   --from-literal=SECRET_NAMESPACE=
+
+# Secret for application configuration parameters. 
+# kubectl create secret generic app-credentials \
+#   --namespace= \
+#   --from-literal=AWS_ACCESS_KEY_ID= \
+#   --from-literal=AWS_SECRET_ACCESS_KEY= \
+#   --from-literal=AWS_REGION= \
+#   --from-literal=AUTH_PASSWORD=	\
+#   --from-literal=JWT_SECRET=\
+#   --from-literal=MONGODB_URI=mongodb://<username>:<password>@<IP address>:<port>/<database>?authSource=admin	\
+#   --from-literal=AWS_BUCKET_NAME=
