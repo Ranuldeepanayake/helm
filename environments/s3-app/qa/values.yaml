@@ -122,7 +122,7 @@ initContainers: []
 containers:
   - name: backend
     repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/backend
-    tag: 1.25.0-rc.0-RELEASE-SNAPSHOT-20260730_154928-COMMITSHA_cd640771
+    tag: 1.25.0-rc.1-RELEASE-SNAPSHOT-20260730_155206-COMMITSHA_8e692bf7
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
