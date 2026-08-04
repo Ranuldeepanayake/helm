@@ -180,6 +180,66 @@ containers:
     #   - "-c"
     args: []
     #   - "while true; do curl http://localhost; done"
+  - name: frontend
+    repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/frontend
+    tag: 1.0.0-DEVELOP-SNAPSHOT-20260804_163304-COMMITSHA_43a926af
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
+        cpu: "32m"
+        memory: "128Mi"
+      limits:
+        cpu: "125m"
+        memory: "256Mi"
+    ports:
+      - name: http
+        containerPort: 3100
+        protocol: TCP
+    volumeMounts: []
+    # - name: vault-token-app
+    #   mountPath: "/etc/secrets"
+    #   readOnly: true
+    # - name: logs-app
+    #   mountPath: "/var/log/nginx"
+    #   readOnly: false
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 30
+      periodSeconds: 15 # Check every 15s
+      timeoutSeconds: 5 # Give the request 5s to respond
+      failureThreshold: 3 # Restart after 3 consecutive failures
+      successThreshold: 1 # Consider healthy after 1 success
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+      successThreshold: 1
+    securityContext: []
+    # runAsUser: 1000
+    # runAsGroup: 3000
+    # fsGroup: 2000
+    secrets: []
+    # - name: foo
+    #   secretKeyRef:
+    #     name: foo-secret
+    #     key: password
+    #     optional: false
+    env: []
+    # - name: ENV_VAR
+    #   value: "value"
+    envFromSecrets: []
+    # - app-credentials #This secret would be created manually in the same namespace.
+    command: []
+    #   - "/bin/sh"
+    #   - "-c"
+    args: []
+    #   - "while true; do curl http://localhost; done"
 #Volumes.
 volumes: []
 # - name: vault-token-app

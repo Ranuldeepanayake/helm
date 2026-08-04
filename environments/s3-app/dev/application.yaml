@@ -14,6 +14,7 @@ spec:
       valueFiles:
         - ../../environments/s3-app/dev/values.yaml
         - ../../environments/s3-app/dev/backend-env.yaml
+        - ../../environments/s3-app/dev/frontend-env.yaml
     #Ignore the orphaned resource warning for manually created resources. 
     #This does not work here. It has to be set in the the argocd project config.
     orphanedResources:
