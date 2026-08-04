@@ -45,8 +45,8 @@ commonLabels:
 #They are for informational purposes.
 podAnnotations: {}
 #Image pull secrets.
-imagePullSecrets:
-  - name: aws-ecr
+imagePullSecrets: []
+#  - name: aws-ecr
 terminationGracePeriodSeconds: 30
 #Security context for all containers in a pod except for initcontainers. This can be overriden on a container level.
 podSecurityContext: {}
@@ -229,7 +229,7 @@ ingress:
       #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
     hosts:
-      - host: dev.s3-app.com
+      - host: dev.s3-app.ranul.click
         paths:
           - path: /
             pathType: Prefix
@@ -237,7 +237,7 @@ ingress:
               name: svc
               port:
                 number: 80
-      - host: dev.api.s3-app.com
+      - host: dev.api.s3-app.ranul.click
         paths:
           - path: /
             pathType: Prefix
@@ -293,7 +293,7 @@ roleBinding:
     name: rl
 #Cron job.
 cronJob:
-  enabled: true
+  enabled: false
   name: aws-ecr-secret-refresher
   schedule: "*/15 * * * *"
   concurrencyPolicy: Forbid
