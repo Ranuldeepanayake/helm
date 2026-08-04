@@ -182,7 +182,7 @@ containers:
     #   - "while true; do curl http://localhost; done"
   - name: frontend
     repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/frontend
-    tag: 1.0.0-DEVELOP-SNAPSHOT-20260804_163304-COMMITSHA_43a926af
+    tag: 1.0.0-DEVELOP-SNAPSHOT-20260804_163912-COMMITSHA_43a926af
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
