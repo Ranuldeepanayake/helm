@@ -122,7 +122,7 @@ initContainers: []
 containers:
   - name: backend
     repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/backend
-    tag: 1.26.0-DEVELOP-SNAPSHOT-20260730_163219-COMMITSHA_68b1f764
+    tag: 1.26.0-DEVELOP-SNAPSHOT-20260810_065052-COMMITSHA_99468918
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
@@ -182,7 +182,7 @@ containers:
     #   - "while true; do curl http://localhost; done"
   - name: frontend
     repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/frontend
-    tag: 1.0.0-DEVELOP-SNAPSHOT-20260804_163912-COMMITSHA_43a926af
+    tag: 1.0.0-DEVELOP-SNAPSHOT-20260810_064730-COMMITSHA_b59e10cb
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
