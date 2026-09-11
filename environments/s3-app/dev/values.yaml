@@ -285,8 +285,8 @@ ingress:
     annotations:
       #nginx.ingress.kubernetes.io/rewrite-target: /$1
       #nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/ssl-redirect: "false"
-      #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      #nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
       cert-manager.io/cluster-issuer: letsencrypt-dns
     hosts:
