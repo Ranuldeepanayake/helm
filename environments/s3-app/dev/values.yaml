@@ -288,7 +288,7 @@ ingress:
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
-      cert-manager.io/cluster-issuer: letsencrypt 
+      cert-manager.io/cluster-issuer: letsencrypt-dns 
     hosts:
       - host: dev.s3-app.ranul.click
         paths:
@@ -298,7 +298,7 @@ ingress:
               name: svc
               port:
                 number: 80
-      - host: dev.api.s3-app.ranul.click
+      - host: api.dev.s3-app.ranul.click
         paths:
           - path: /
             pathType: Prefix
@@ -309,8 +309,11 @@ ingress:
     tls:
       - hosts:
           - dev.s3-app.ranul.click
-          - dev.api.s3-app.ranul.click
+          - "*.dev.s3-app.ranul.click"
         secretName: dev-s3-app-tls-certificate
+      #- hosts:
+      #    - api.student.example.com
+      #  secretName: student-api-tls
 #Service accounts.
 serviceAccount:
   create: true
