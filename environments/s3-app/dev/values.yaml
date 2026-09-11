@@ -182,7 +182,7 @@ containers:
     #   - "while true; do curl http://localhost; done"
   - name: frontend
     repository: 104322896078.dkr.ecr.ap-southeast-1.amazonaws.com/s3-app/frontend
-    tag: 1.0.0-DEVELOP-SNAPSHOT-20260810_064730-COMMITSHA_b59e10cb
+    tag: 1.0.0-DEVELOP-SNAPSHOT-20260911_091658-COMMITSHA_413bf996
     imagePullPolicy: IfNotPresent
     resources:
       requests: #Minimum guaranteed resources for the container to run. Also used by the HPA.
@@ -288,7 +288,7 @@ ingress:
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
       #nginx.ingress.kubernetes.io/proxy-body-size: "8m"
-      cert-manager.io/cluster-issuer: letsencrypt-dns 
+      cert-manager.io/cluster-issuer: letsencrypt-dns
     hosts:
       - host: dev.s3-app.ranul.click
         paths:
@@ -311,9 +311,9 @@ ingress:
           - dev.s3-app.ranul.click
           - "*.dev.s3-app.ranul.click"
         secretName: dev-s3-app-tls-certificate
-      #- hosts:
-      #    - api.student.example.com
-      #  secretName: student-api-tls
+        #- hosts:
+        #    - api.student.example.com
+        #  secretName: student-api-tls
 #Service accounts.
 serviceAccount:
   create: true
