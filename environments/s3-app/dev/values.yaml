@@ -135,7 +135,10 @@ containers:
       - name: http
         containerPort: 3100
         protocol: TCP
-    volumeMounts: []
+    volumeMounts:
+      - name: rds-ca-bundle
+        mountPath: /etc/ssl/certs/rds-ca-bundle.pem
+        readOnly: true
     # - name: vault-token-app
     #   mountPath: "/etc/secrets"
     #   readOnly: true
@@ -241,7 +244,10 @@ containers:
     args: []
     #   - "while true; do curl http://localhost; done"
 #Volumes.
-volumes: []
+volumes:
+  - name: rds-ca-bundle
+    secret:
+      secretName: rds-ca-bundle
 # - name: vault-token-app
 #   secret:
 #     secretName: vault-token-app-secret
