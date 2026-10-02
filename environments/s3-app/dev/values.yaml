@@ -12,7 +12,7 @@ deployment:
 #Autoscaler.
 replicaCount: 1 #Ignored when autoscaling is enabled.
 autoscaling:
-  enabled: true
+  enabled: false
   labels: {}
   annotations: {}
   minReplicas: 2
@@ -193,7 +193,7 @@ containers:
         memory: "256Mi"
     ports:
       - name: http
-        containerPort: 3100
+        containerPort: 3300
         protocol: TCP
     volumeMounts: []
     # - name: vault-token-app
