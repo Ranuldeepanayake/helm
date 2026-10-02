@@ -138,6 +138,7 @@ containers:
     volumeMounts:
       - name: rds-ca-bundle
         mountPath: /etc/ssl/certs/rds-ca-bundle.pem
+        subPath: rds-ca-bundle.pem
         readOnly: true
     # - name: vault-token-app
     #   mountPath: "/etc/secrets"
