@@ -351,7 +351,7 @@ roleBinding:
   annotations: {}
   subjects:
     - kind: ServiceAccount
-      name: sa
+      name: primary
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
