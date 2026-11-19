@@ -44,8 +44,9 @@ spec:
       {{- with .Values.commonLabels }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.podAnnotations }}
       annotations:
+        checksum/config: {{ .Values.env | toYaml | sha256sum | quote }}
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
     
