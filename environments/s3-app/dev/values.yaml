@@ -44,7 +44,15 @@ commonLabels:
 #Opt this environment's application pods into Istio sidecar injection.
 podLabels:
   sidecar.istio.io/inject: "true"
-podAnnotations: {}
+podAnnotations:
+  cloudwatch.aws.amazon.com/auto-annotate-nodejs: "true"
+  instrumentation.opentelemetry.io/inject-nodejs: "true"
+  cloudwatch.aws.amazon.com/auto-annotate-java: "false"
+  instrumentation.opentelemetry.io/inject-java: "false"
+  cloudwatch.aws.amazon.com/auto-annotate-python: "false"
+  instrumentation.opentelemetry.io/inject-python: "false"
+  cloudwatch.aws.amazon.com/auto-annotate-dotnet: "false"
+  instrumentation.opentelemetry.io/inject-dotnet: "false"
 #Image pull secrets.
 imagePullSecrets: []
 #  - name: aws-ecr
@@ -133,7 +141,7 @@ containers:
         cpu: "125m"
         memory: "256Mi"
     ports:
-      - name: http
+      - name: backend-http
         containerPort: 3100
         protocol: TCP
     volumeMounts:
@@ -150,7 +158,7 @@ containers:
     livenessProbe:
       httpGet:
         path: /
-        port: http
+        port: backend-http
       initialDelaySeconds: 30
       periodSeconds: 15 # Check every 15s
       timeoutSeconds: 5 # Give the request 5s to respond
@@ -159,7 +167,7 @@ containers:
     readinessProbe:
       httpGet:
         path: /api/health/live
-        port: http
+        port: backend-http
       initialDelaySeconds: 15
       periodSeconds: 5
       timeoutSeconds: 3
@@ -197,7 +205,7 @@ containers:
         cpu: "125m"
         memory: "256Mi"
     ports:
-      - name: http
+      - name: frontend-http
         containerPort: 3300
         protocol: TCP
     volumeMounts: []
@@ -210,7 +218,7 @@ containers:
     livenessProbe:
       httpGet:
         path: /
-        port: http
+        port: frontend-http
       initialDelaySeconds: 30
       periodSeconds: 15 # Check every 15s
       timeoutSeconds: 5 # Give the request 5s to respond
@@ -219,7 +227,7 @@ containers:
     readinessProbe:
       httpGet:
         path: /
-        port: http
+        port: frontend-http
       initialDelaySeconds: 15
       periodSeconds: 5
       timeoutSeconds: 3
