@@ -41,8 +41,9 @@ strategy:
 #These are different from selector labels since they are not used for selection.
 commonLabels:
   environment: dev
-#Add custom metadata to pods. These are different from labels since they are not used for selection.
-#They are for informational purposes.
+#Opt this environment's application pods into Istio sidecar injection.
+podLabels:
+  sidecar.istio.io/inject: "true"
 podAnnotations: {}
 #Image pull secrets.
 imagePullSecrets: []

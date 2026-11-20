@@ -27,8 +27,8 @@ deployment:
 commonLabels:
   environment: dev
 
-#Add custom metadata to pods. These are different from labels since they are not used for selection.
-#They are for informational purposes.
+#Add custom labels and annotations to pod metadata. Pod labels must not override selector labels.
+podLabels: {}
 podAnnotations: {}
 
 #Image pull secrets.
