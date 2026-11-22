@@ -60,10 +60,15 @@ terminationGracePeriodSeconds: 30
 #Security context for all containers in a pod except for initcontainers. This can be overriden on a container level.
 podSecurityContext: {}
 #Basic node selection rules.
-nodeSelector: {}
+nodeSelector:
+  workload: s3-app
 # kubernetes.io/hostname: kubernetes-worker-1
 #node-role.kubernetes.io/worker: ""
-tolerations: []
+tolerations:
+  - key: workload
+    operator: Equal
+    value: s3-app
+    effect: NoExecute
 #Advanced node selection rules.
 affinity:
   #Node affinity rules to run pods on specific nodes.
