@@ -291,12 +291,14 @@ service:
     labels: {}
     annotations: {}
     ports:
-      - name: web
+      - name: http-web
         port: 80
         targetPort: 3300
-      - name: api
+        protocol: TCP
+      - name: http-api
         port: 8080
         targetPort: 3100
+        protocol: TCP
 #Ingresses.
 ingress:
   - name: ing

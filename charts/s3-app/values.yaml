@@ -150,9 +150,10 @@ service:
     labels: {}
     annotations: {}
     ports:
-      - name: api
+      - name: http-api
         port: 80
         targetPort: 80
+        protocol: TCP
 
 #Ingresses.
 ingress:
